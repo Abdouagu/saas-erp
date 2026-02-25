@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd /c/Users/HYPER/OneDrive/Bureau/Moi/saas-erp && php artisan storage:link 2>&1)",
+      "Bash(cd /c/Users/HYPER/OneDrive/Bureau/Moi/saas-erp && php artisan migrate:fresh --seed 2>&1)"
+    ]
+  }
+}
