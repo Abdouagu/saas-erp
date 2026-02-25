@@ -26,13 +26,21 @@ class ProductController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%$search%")
+                  ->orWhere('brand', 'like', "%$search%")
                   ->orWhere('serial_number', 'like', "%$search%")
                   ->orWhere('barcode', 'like', "%$search%")
                   ->orWhere('internal_code', 'like', "%$search%");
             });
         }
 
-        $products = $query->latest()->paginate(15)->withQueryString();
+        $products = $query->latest()->paginate(20)->withQueryString();
+
+        // append photo_url for each product
+        $products->getCollection()->transform(function ($p) {
+            $p->photo_url = $p->photo ? asset('storage/' . $p->photo) : null;
+            return $p;
+        });
+
         return Inertia::render('Vendor/Products/Index', [
             'products' => $products,
             'filters'  => $request->only('search', 'category', 'status'),
@@ -48,6 +56,7 @@ class ProductController extends Controller
     {
         $request->validate([
             'category' => 'required|in:phone,pc',
+            'brand' => 'nullable|string|max:100',
             'name' => 'required|string|max:255',
             'serial_number' => 'nullable|string|max:100',
             'battery_percentage' => 'nullable|integer|min:0|max:100',
@@ -86,11 +95,13 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         $product->load('stockMovements');
+        $product->photo_url = $product->photo ? asset('storage/' . $product->photo) : null;
         return Inertia::render('Vendor/Products/Show', ['product' => $product]);
     }
 
     public function edit(Product $product)
     {
+        $product->photo_url = $product->photo ? asset('storage/' . $product->photo) : null;
         return Inertia::render('Vendor/Products/Create', ['product' => $product]);
     }
 
@@ -98,6 +109,7 @@ class ProductController extends Controller
     {
         $request->validate([
             'category' => 'required|in:phone,pc',
+            'brand' => 'nullable|string|max:100',
             'name' => 'required|string|max:255',
             'serial_number' => 'nullable|string|max:100',
             'battery_percentage' => 'nullable|integer|min:0|max:100',
