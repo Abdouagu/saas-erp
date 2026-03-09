@@ -31,7 +31,7 @@ RUN chmod -R 775 storage bootstrap/cache \
 
 # Nginx config
 COPY docker/nginx.conf /etc/nginx/sites-available/default.template
-RUN rm -f /etc/nginx/sites-enabled/default
+RUN rm -f /etc/nginx/sites-enabled/default && rm -f /etc/nginx/conf.d/default.conf
 
 # Supervisor config
 COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf

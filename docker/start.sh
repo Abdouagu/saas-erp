@@ -4,7 +4,7 @@ set -e
 export PORT=${PORT:-10000}
 
 # Generate nginx config with correct port
-envsubst '${PORT}' < /etc/nginx/sites-available/default.template > /etc/nginx/sites-available/default
+envsubst '${PORT}' < /etc/nginx/sites-available/default.template > /etc/nginx/conf.d/app.conf
 
 # Laravel setup
 php /app/artisan config:cache
