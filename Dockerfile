@@ -3,7 +3,7 @@ FROM php:8.3-cli
 # System dependencies
 RUN apt-get update && apt-get install -y \
     git zip unzip curl libzip-dev libpng-dev libonig-dev libxml2-dev \
-    && docker-php-ext-install pdo pdo_mysql mbstring zip bcmath gd \
+    && docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring zip bcmath gd \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Composer
