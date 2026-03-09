@@ -1,5 +1,5 @@
-import styled from 'styled-components'
 import { Head, Link, router } from '@inertiajs/react'
+import { ArrowLeft, Pencil, Trash2, FileText, Package } from 'lucide-react'
 import AppLayout from '../../../Layouts/AppLayout'
 import Badge from '../../../Components/Badge'
 
@@ -9,343 +9,18 @@ const statusMap      = { available: 'info', sold: 'danger' }
 const conditionLabel = { new: 'Neuf', used: 'Occasion' }
 const statusLabel    = { available: 'Disponible', sold: 'Vendu' }
 
-/* ── Styled Components ────────────────────────────────────────────────────── */
-const PageWrapper = styled.div`
-    max-width: 1024px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-`
-
-const HeaderActions = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-`
-
-const BackLink = styled(Link)`
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 13px;
-    color: #9CA3AF;
-    text-decoration: none;
-    margin-right: 8px;
-    transition: color 0.15s;
-    &:hover { color: #6366F1; }
-`
-
-const EditBtn = styled(Link)`
-    background: #6366F1;
-    color: #FFFFFF;
-    border-radius: 8px;
-    padding: 8px 16px;
-    font-size: 13px;
-    font-weight: 600;
-    text-decoration: none;
-    box-shadow: 0 1px 2px rgba(99,102,241,0.3);
-    transition: background 0.15s;
-    &:hover { background: #4F46E5; }
-`
-
-const SecondaryBtn = styled.a`
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 8px;
-    padding: 8px 16px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #374151;
-    text-decoration: none;
-    transition: background 0.15s;
-    &:hover { background: #F9FAFB; }
-`
-
-const DangerBtn = styled.button`
-    background: #FFFFFF;
-    border: 1px solid #FECACA;
-    border-radius: 8px;
-    padding: 8px 16px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #EF4444;
-    cursor: pointer;
-    transition: background 0.15s;
-    &:hover { background: #FEF2F2; }
-`
-
-/* ── Main layout ─────────────────────────────────────────────────────────── */
-const TwoCol = styled.div`
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 20px;
-    @media (min-width: 768px) {
-        grid-template-columns: 340px 1fr;
-    }
-`
-
-/* Left column — photo + title */
-const PhotoCard = styled.div`
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-`
-
-const PhotoContainer = styled.div`
-    width: 100%;
-    height: 280px;
-    background: #F3F4F6;
-    position: relative;
-    overflow: hidden;
-`
-
-const ProductImg = styled.img`
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-`
-
-const PhotoPlaceholder = styled.div`
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
-    font-size: 80px;
-    opacity: 0.25;
-`
-
-const PhotoMeta = styled.div`
-    padding: 16px 20px;
-`
-
-const ProductBrand = styled.p`
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: #9CA3AF;
-    margin: 0 0 4px;
-`
-
-const ProductName = styled.h2`
-    font-size: 20px;
-    font-weight: 700;
-    color: #111827;
-    margin: 0 0 12px;
-`
-
-const BadgeGroup = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-`
-
-const ProductCode = styled.p`
-    font-family: ui-monospace, monospace;
-    font-size: 12px;
-    color: #9CA3AF;
-    margin: 12px 0 0;
-`
-
-/* Right column — info cards */
-const RightCol = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-`
-
-const Card = styled.div`
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-`
-
-const CardTitle = styled.h3`
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: #9CA3AF;
-    margin: 0 0 14px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #F3F4F6;
-`
-
-const RowItem = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 9px 0;
-    border-bottom: 1px solid #F9FAFB;
-    &:last-child { border-bottom: none; }
-`
-
-const RowLabel = styled.span`
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #9CA3AF;
-`
-
-const RowValue = styled.span`
-    font-size: 14px;
-    color: #111827;
-    font-weight: 500;
-    text-align: right;
-`
-
-const RowEmpty = styled.span`
-    font-size: 14px;
-    color: #D1D5DB;
-`
-
-/* Pricing rows */
-const PriceRow = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid #F9FAFB;
-    &:last-child { border-bottom: none; }
-`
-
-const PriceLabel = styled.span`
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #9CA3AF;
-`
-
-const PriceValue = styled.span`
-    font-size: 18px;
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-    color: #111827;
-`
-
-const PriceMuted = styled.span`
-    font-size: 15px;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-    color: #6B7280;
-`
-
-const ProfitPositive = styled.span`
-    font-size: 15px;
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-    color: #059669;
-`
-
-const ProfitNegative = styled.span`
-    font-size: 15px;
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-    color: #EF4444;
-`
-
-const BarcodeBox = styled.div`
-    margin-top: 14px;
-    padding: 12px 14px;
-    background: #F9FAFB;
-    border-radius: 8px;
-    border: 1px solid #E5E7EB;
-`
-
-const BarcodeLabel = styled.p`
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: #9CA3AF;
-    margin: 0 0 4px;
-`
-
-const BarcodeValue = styled.p`
-    font-family: ui-monospace, monospace;
-    font-size: 14px;
-    color: #374151;
-    margin: 0;
-`
-
-/* ── Stock movements ─────────────────────────────────────────────────────── */
-const MovementsCard = styled.div`
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-`
-
-const MovementsHeader = styled.div`
-    padding: 16px 20px;
-    border-bottom: 1px solid #E5E7EB;
-`
-
-const MovementsTitle = styled.h3`
-    font-size: 14px;
-    font-weight: 600;
-    color: #111827;
-    margin: 0;
-`
-
-const MovementRow = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 20px;
-    border-bottom: 1px solid #F3F4F6;
-    &:last-child { border-bottom: none; }
-`
-
-const MovementType = styled.p`
-    font-size: 14px;
-    color: #111827;
-    text-transform: capitalize;
-    margin: 0;
-`
-
-const MovementNotes = styled.p`
-    font-size: 12px;
-    color: #9CA3AF;
-    margin: 2px 0 0;
-`
-
-const QtyPositive = styled.span`
-    font-size: 14px;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-    color: #059669;
-`
-
-const QtyNegative = styled.span`
-    font-size: 14px;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-    color: #EF4444;
-`
-
-/* ── Helper ───────────────────────────────────────────────────────────────── */
 const Row = ({ label, value }) => (
-    <RowItem>
-        <RowLabel>{label}</RowLabel>
-        {value != null && value !== '' ? <RowValue>{value}</RowValue> : <RowEmpty>—</RowEmpty>}
-    </RowItem>
+    <div className="flex justify-between items-center py-2.5 border-b border-gray-50 last:border-b-0">
+        <span className="text-xs font-semibold uppercase tracking-wide text-gray-400">{label}</span>
+        {value != null && value !== ''
+            ? <span className="text-sm text-gray-900 font-medium text-right">{value}</span>
+            : <span className="text-sm text-gray-300">—</span>
+        }
+    </div>
 )
 
-/* ── Component ────────────────────────────────────────────────────────────── */
 export default function ProductShow({ product }) {
-    const profit = parseFloat(product.selling_price) - parseFloat(product.purchase_price)
+    const profit         = parseFloat(product.selling_price) - parseFloat(product.purchase_price)
     const profitPositive = profit >= 0
 
     const handleDelete = () => {
@@ -358,109 +33,140 @@ export default function ProductShow({ product }) {
         <>
             <Head title={product.name} />
             <AppLayout title={product.name}>
-                <PageWrapper>
+                <div className="max-w-5xl flex flex-col gap-5">
+
                     {/* Header actions */}
-                    <HeaderActions>
-                        <BackLink href="/products">← Retour</BackLink>
-                        <EditBtn href={`/products/${product.id}/edit`}>Modifier</EditBtn>
-                        <SecondaryBtn href={`/products/${product.id}/barcode/pdf`} target="_blank">
+                    <div className="flex items-center gap-2 flex-wrap">
+                        <Link
+                            href="/products"
+                            className="inline-flex items-center gap-1.5 text-sm text-gray-400 no-underline hover:text-brand-500 transition-colors mr-2"
+                        >
+                            <ArrowLeft size={15} />
+                            Retour
+                        </Link>
+                        <Link
+                            href={`/products/${product.id}/edit`}
+                            className="inline-flex items-center gap-1.5 bg-brand-500 text-white px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-brand-600 transition-colors no-underline"
+                        >
+                            <Pencil size={13} />
+                            Modifier
+                        </Link>
+                        <a
+                            href={`/products/${product.id}/barcode/pdf`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1.5 bg-white border border-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors no-underline"
+                        >
+                            <FileText size={13} />
                             PDF Barcode
-                        </SecondaryBtn>
-                        <DangerBtn onClick={handleDelete}>Supprimer</DangerBtn>
-                    </HeaderActions>
+                        </a>
+                        <button
+                            onClick={handleDelete}
+                            className="inline-flex items-center gap-1.5 bg-white border border-error-200 text-error-500 px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-error-50 transition-colors cursor-pointer"
+                        >
+                            <Trash2 size={13} />
+                            Supprimer
+                        </button>
+                    </div>
 
                     {/* Main 2-column layout */}
-                    <TwoCol>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+
                         {/* Left — Photo + title */}
-                        <PhotoCard>
-                            <PhotoContainer>
-                                {product.photo_url
-                                    ? <ProductImg src={product.photo_url} alt={product.name} />
-                                    : (
-                                        <PhotoPlaceholder>
-                                            {product.category === 'phone' ? '📱' : '💻'}
-                                        </PhotoPlaceholder>
-                                    )
-                                }
-                            </PhotoContainer>
-                            <PhotoMeta>
-                                {product.brand && <ProductBrand>{product.brand}</ProductBrand>}
-                                <ProductName>{product.name}</ProductName>
-                                <BadgeGroup>
-                                    <Badge variant={conditionMap[product.condition]}>
-                                        {conditionLabel[product.condition]}
-                                    </Badge>
-                                    <Badge variant={statusMap[product.status]}>
-                                        {statusLabel[product.status]}
-                                    </Badge>
-                                </BadgeGroup>
-                                <ProductCode>{product.internal_code}</ProductCode>
-                            </PhotoMeta>
-                        </PhotoCard>
+                        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-theme-xs">
+                            <div className="relative w-full h-80 bg-gray-100 overflow-hidden">
+                                {product.photo_url ? (
+                                    <img src={product.photo_url} alt={product.name} className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+                                        <Package size={80} className="text-gray-300 opacity-50" />
+                                    </div>
+                                )}
+                            </div>
+                            <div className="px-5 py-4">
+                                {product.brand && (
+                                    <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">
+                                        {product.brand}
+                                    </p>
+                                )}
+                                <h2 className="text-xl font-bold text-gray-900 mb-3">{product.name}</h2>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <Badge variant={conditionMap[product.condition]}>{conditionLabel[product.condition]}</Badge>
+                                    <Badge variant={statusMap[product.status]}>{statusLabel[product.status]}</Badge>
+                                </div>
+                                {product.internal_code && (
+                                    <p className="font-mono text-xs text-gray-400 mt-3 mb-0">{product.internal_code}</p>
+                                )}
+                            </div>
+                        </div>
 
                         {/* Right — Info + pricing */}
-                        <RightCol>
-                            <Card>
-                                <CardTitle>Informations</CardTitle>
-                                <Row label="Catégorie"  value={<span style={{ textTransform: 'capitalize' }}>{product.category === 'phone' ? 'Téléphone' : 'PC / Laptop'}</span>} />
+                        <div className="flex flex-col gap-4">
+                            <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-theme-xs">
+                                <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3.5 pb-2.5 border-b border-gray-100">
+                                    Informations
+                                </h3>
+                                <Row label="Catégorie" value={<span className="capitalize">{product.category === 'phone' ? 'Téléphone' : 'PC / Laptop'}</span>} />
                                 {product.brand && <Row label="Marque" value={product.brand} />}
-                                <Row label="Modèle"    value={product.name} />
-                                <Row label="N° Série"  value={product.serial_number} />
-                                <Row label="Couleur"   value={product.color} />
-                                <Row label="Stockage"  value={product.storage} />
+                                <Row label="Modèle"   value={product.name} />
+                                <Row label="N° Série" value={product.serial_number} />
+                                <Row label="Couleur"  value={product.color} />
+                                <Row label="Stockage" value={product.storage} />
                                 {product.category === 'phone' && (
                                     <Row label="Batterie" value={product.battery_percentage ? `${product.battery_percentage}%` : null} />
                                 )}
-                            </Card>
+                            </div>
 
-                            <Card>
-                                <CardTitle>Tarification</CardTitle>
-                                <PriceRow>
-                                    <PriceLabel>Prix d'achat</PriceLabel>
-                                    <PriceMuted>{fmt(product.purchase_price)}</PriceMuted>
-                                </PriceRow>
-                                <PriceRow>
-                                    <PriceLabel>Prix de vente</PriceLabel>
-                                    <PriceValue>{fmt(product.selling_price)}</PriceValue>
-                                </PriceRow>
-                                <PriceRow>
-                                    <PriceLabel>Profit</PriceLabel>
-                                    {profitPositive
-                                        ? <ProfitPositive>+{fmt(profit)}</ProfitPositive>
-                                        : <ProfitNegative>{fmt(profit)}</ProfitNegative>
-                                    }
-                                </PriceRow>
-                                <BarcodeBox>
-                                    <BarcodeLabel>Code-barres</BarcodeLabel>
-                                    <BarcodeValue>{product.barcode}</BarcodeValue>
-                                </BarcodeBox>
-                            </Card>
-                        </RightCol>
-                    </TwoCol>
+                            <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-theme-xs">
+                                <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3.5 pb-2.5 border-b border-gray-100">
+                                    Tarification
+                                </h3>
+                                <div className="flex justify-between items-center py-2.5 border-b border-gray-50">
+                                    <span className="text-xs font-semibold uppercase tracking-wide text-gray-400">Prix d'achat</span>
+                                    <span className="text-base font-semibold text-gray-500 tabular-nums">{fmt(product.purchase_price)}</span>
+                                </div>
+                                <div className="flex justify-between items-center py-2.5 border-b border-gray-50">
+                                    <span className="text-xs font-semibold uppercase tracking-wide text-gray-400">Prix de vente</span>
+                                    <span className="text-lg font-bold text-gray-900 tabular-nums">{fmt(product.selling_price)}</span>
+                                </div>
+                                <div className="flex justify-between items-center py-2.5">
+                                    <span className="text-xs font-semibold uppercase tracking-wide text-gray-400">Profit</span>
+                                    <span className={`text-base font-bold tabular-nums ${profitPositive ? 'text-success-600' : 'text-error-500'}`}>
+                                        {profitPositive ? '+' : ''}{fmt(profit)}
+                                    </span>
+                                </div>
+                                {product.barcode && (
+                                    <div className="mt-3.5 px-3.5 py-3 bg-gray-50 rounded-xl border border-gray-200">
+                                        <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-1">Code-barres</p>
+                                        <p className="font-mono text-sm text-gray-700 m-0">{product.barcode}</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
 
                     {/* Stock movements */}
                     {product.stock_movements?.length > 0 && (
-                        <MovementsCard>
-                            <MovementsHeader>
-                                <MovementsTitle>Mouvements de stock</MovementsTitle>
-                            </MovementsHeader>
+                        <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-theme-xs">
+                            <div className="px-5 py-4 border-b border-gray-100">
+                                <h3 className="text-sm font-semibold text-gray-900 m-0">Mouvements de stock</h3>
+                            </div>
                             <div>
                                 {product.stock_movements.map((m) => (
-                                    <MovementRow key={m.id}>
+                                    <div key={m.id} className="flex items-center justify-between px-5 py-3 border-b border-gray-100 last:border-b-0">
                                         <div>
-                                            <MovementType>{m.type}</MovementType>
-                                            {m.notes && <MovementNotes>{m.notes}</MovementNotes>}
+                                            <p className="text-sm text-gray-900 capitalize m-0">{m.type}</p>
+                                            {m.notes && <p className="text-xs text-gray-400 mt-0.5 mb-0">{m.notes}</p>}
                                         </div>
-                                        {m.quantity > 0
-                                            ? <QtyPositive>+{m.quantity}</QtyPositive>
-                                            : <QtyNegative>{m.quantity}</QtyNegative>
-                                        }
-                                    </MovementRow>
+                                        <span className={`text-sm font-semibold tabular-nums ${m.quantity > 0 ? 'text-success-600' : 'text-error-500'}`}>
+                                            {m.quantity > 0 ? `+${m.quantity}` : m.quantity}
+                                        </span>
+                                    </div>
                                 ))}
                             </div>
-                        </MovementsCard>
+                        </div>
                     )}
-                </PageWrapper>
+                </div>
             </AppLayout>
         </>
     )

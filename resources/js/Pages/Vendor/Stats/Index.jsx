@@ -1,180 +1,14 @@
-import styled from 'styled-components'
 import { Head } from '@inertiajs/react'
 import AppLayout from '../../../Layouts/AppLayout'
 import StatCard from '../../../Components/StatCard'
+import { TrendingUp, ArrowUpRight, AlertTriangle, Calendar } from 'lucide-react'
 import {
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     PieChart, Pie, Cell, Legend,
 } from 'recharts'
 
 const fmt = (n) => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n ?? 0)
-const PIE_COLORS = ['#6366F1', '#06B6D4']
-
-/* ── Styled Components ── */
-const PageWrapper = styled.div`
-    max-width: 1024px;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-`
-
-const PageHeader = styled.div``
-
-const PageTitle = styled.h2`
-    font-size: 20px;
-    font-weight: 700;
-    color: #111827;
-    margin: 0;
-`
-
-const PageSubtitle = styled.p`
-    font-size: 14px;
-    color: #6B7280;
-    margin: 4px 0 0;
-`
-
-const StatsGrid = styled.div`
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    @media (min-width: 1024px) {
-        grid-template-columns: repeat(4, 1fr);
-    }
-`
-
-const ChartsGrid = styled.div`
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-    @media (min-width: 1024px) {
-        grid-template-columns: 2fr 1fr;
-    }
-`
-
-const ChartCard = styled.div`
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-`
-
-const ChartTitle = styled.h3`
-    font-size: 13px;
-    font-weight: 600;
-    color: #111827;
-    margin: 0 0 16px;
-`
-
-const ChartWrap = styled.div`
-    height: 192px;
-`
-
-const TablesGrid = styled.div`
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-    @media (min-width: 1024px) {
-        grid-template-columns: 1fr 1fr;
-    }
-`
-
-const TableCard = styled.div`
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-`
-
-const TableCardHeader = styled.div`
-    padding: 16px 20px;
-    border-bottom: 1px solid #E5E7EB;
-`
-
-const TableCardTitle = styled.h3`
-    font-size: 14px;
-    font-weight: 600;
-    color: #111827;
-    margin: 0;
-`
-
-const RankRow = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 20px;
-    border-bottom: 1px solid #F3F4F6;
-    &:last-child { border-bottom: none; }
-`
-
-const RankNum = styled.span`
-    font-size: 12px;
-    color: #D1D5DB;
-    width: 18px;
-    font-variant-numeric: tabular-nums;
-    flex-shrink: 0;
-`
-
-const RankInfo = styled.div`
-    flex: 1;
-    min-width: 0;
-`
-
-const RankName = styled.p`
-    font-size: 14px;
-    font-weight: 500;
-    color: #111827;
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-`
-
-const RankSub = styled.p`
-    font-size: 12px;
-    color: #9CA3AF;
-    margin: 2px 0 0;
-    text-transform: capitalize;
-`
-
-const RankValue = styled.span`
-    font-size: 14px;
-    font-weight: 600;
-    color: #6366F1;
-    font-variant-numeric: tabular-nums;
-    flex-shrink: 0;
-`
-
-const ClientAvatar = styled.div`
-    width: 28px;
-    height: 28px;
-    background: #EEF2FF;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: 600;
-    color: #6366F1;
-    flex-shrink: 0;
-`
-
-const SalesCount = styled.span`
-    font-size: 14px;
-    font-weight: 600;
-    color: #059669;
-    font-variant-numeric: tabular-nums;
-    flex-shrink: 0;
-`
-
-const EmptyState = styled.p`
-    padding: 24px 20px;
-    text-align: center;
-    font-size: 14px;
-    color: #9CA3AF;
-    margin: 0;
-`
+const PIE_COLORS = ['#465fff', '#12b76a']
 
 export default function StatsIndex({
     totalRevenue, totalProfit, thisMonthRevenue,
@@ -190,111 +24,113 @@ export default function StatsIndex({
         <>
             <Head title="Statistiques" />
             <AppLayout title="Statistiques">
-                <PageWrapper>
-                    <PageHeader>
-                        <PageTitle>Statistiques</PageTitle>
-                        <PageSubtitle>Analyse de votre activité</PageSubtitle>
-                    </PageHeader>
+                <div className="max-w-5xl flex flex-col gap-6">
+                    <div>
+                        <h2 className="text-xl font-bold text-gray-900">Statistiques</h2>
+                        <p className="text-sm text-gray-500 mt-1">Analyse de votre activité</p>
+                    </div>
 
-                    <StatsGrid>
-                        <StatCard title="Revenus totaux" value={fmt(totalRevenue)} icon="€" />
-                        <StatCard title="Profit net" value={fmt(totalProfit)} icon="↑" />
-                        <StatCard title="Ce mois" value={fmt(thisMonthRevenue)} icon="📅" />
-                        <StatCard title="Dettes" value={fmt(totalDebt)} subtitle={`${pendingSales} ventes impayées`} icon="!" />
-                    </StatsGrid>
+                    {/* Stat cards */}
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                        <StatCard title="Revenus totaux" value={fmt(totalRevenue)} icon={<TrendingUp size={18} />} index={0} />
+                        <StatCard title="Profit net" value={fmt(totalProfit)} icon={<ArrowUpRight size={18} />} iconBg="bg-success-50" iconColor="text-success-500" index={1} />
+                        <StatCard title="Ce mois" value={fmt(thisMonthRevenue)} icon={<Calendar size={18} />} iconBg="bg-warning-50" iconColor="text-warning-500" index={2} />
+                        <StatCard title="Dettes" value={fmt(totalDebt)} subtitle={`${pendingSales} ventes impayées`} icon={<AlertTriangle size={18} />} iconBg="bg-error-50" iconColor="text-error-500" index={3} />
+                    </div>
 
-                    <ChartsGrid>
-                        <ChartCard>
-                            <ChartTitle>Revenus — 12 derniers mois</ChartTitle>
-                            <ChartWrap>
+                    {/* Charts */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                        <div className="lg:col-span-2 bg-white border border-gray-200 rounded-2xl shadow-theme-xs p-5">
+                            <h3 className="text-sm font-semibold text-gray-900 mb-4">Revenus — 12 derniers mois</h3>
+                            <div className="h-48">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <AreaChart data={monthlyRevenue} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
                                         <defs>
                                             <linearGradient id="statsGrad" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%" stopColor="#6366F1" stopOpacity={0.12} />
-                                                <stop offset="95%" stopColor="#6366F1" stopOpacity={0} />
+                                                <stop offset="5%" stopColor="#465fff" stopOpacity={0.12} />
+                                                <stop offset="95%" stopColor="#465fff" stopOpacity={0} />
                                             </linearGradient>
                                         </defs>
-                                        <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
-                                        <XAxis dataKey="month" tick={{ fill: '#9CA3AF', fontSize: 11 }} axisLine={false} tickLine={false} />
-                                        <YAxis tick={{ fill: '#9CA3AF', fontSize: 11 }} tickFormatter={(v) => `${v}€`} axisLine={false} tickLine={false} width={48} />
+                                        <CartesianGrid strokeDasharray="3 3" stroke="#F2F4F7" />
+                                        <XAxis dataKey="month" tick={{ fill: '#98A2B3', fontSize: 11 }} axisLine={false} tickLine={false} />
+                                        <YAxis tick={{ fill: '#98A2B3', fontSize: 11 }} tickFormatter={(v) => `${v}€`} axisLine={false} tickLine={false} width={48} />
                                         <Tooltip
-                                            contentStyle={{ background: '#FFFFFF', border: '1px solid #E5E7EB', borderRadius: '8px', color: '#111827', fontSize: 12 }}
+                                            contentStyle={{ background: '#fff', border: '1px solid #E4E7EC', borderRadius: '10px', fontSize: 12 }}
                                             formatter={(v) => [fmt(v), 'Revenu']}
-                                            cursor={{ stroke: '#E5E7EB' }}
+                                            cursor={{ stroke: '#E4E7EC' }}
                                         />
-                                        <Area type="monotone" dataKey="revenue" stroke="#6366F1" strokeWidth={2} fill="url(#statsGrad)" dot={false} activeDot={{ r: 4, fill: '#6366F1', strokeWidth: 0 }} />
+                                        <Area type="monotone" dataKey="revenue" stroke="#465fff" strokeWidth={2} fill="url(#statsGrad)" dot={false} activeDot={{ r: 4, fill: '#465fff', strokeWidth: 0 }} />
                                     </AreaChart>
                                 </ResponsiveContainer>
-                            </ChartWrap>
-                        </ChartCard>
+                            </div>
+                        </div>
 
-                        <ChartCard>
-                            <ChartTitle>Répartition</ChartTitle>
-                            <ChartWrap>
+                        <div className="bg-white border border-gray-200 rounded-2xl shadow-theme-xs p-5">
+                            <h3 className="text-sm font-semibold text-gray-900 mb-4">Répartition</h3>
+                            <div className="h-48">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <PieChart>
-                                        <Pie
-                                            data={pieData}
-                                            cx="50%"
-                                            cy="50%"
-                                            innerRadius={50}
-                                            outerRadius={72}
-                                            dataKey="value"
-                                            strokeWidth={0}
-                                        >
+                                        <Pie data={pieData} cx="50%" cy="50%" innerRadius={50} outerRadius={72} dataKey="value" strokeWidth={0}>
                                             {pieData.map((_, i) => (
                                                 <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                                             ))}
                                         </Pie>
-                                        <Legend
-                                            wrapperStyle={{ fontSize: 12 }}
-                                            formatter={(value) => <span style={{ color: '#6B7280' }}>{value}</span>}
-                                        />
+                                        <Legend wrapperStyle={{ fontSize: 12 }} formatter={(value) => <span style={{ color: '#667085' }}>{value}</span>} />
                                     </PieChart>
                                 </ResponsiveContainer>
-                            </ChartWrap>
-                        </ChartCard>
-                    </ChartsGrid>
+                            </div>
+                        </div>
+                    </div>
 
-                    <TablesGrid>
-                        <TableCard>
-                            <TableCardHeader>
-                                <TableCardTitle>Top produits vendus</TableCardTitle>
-                            </TableCardHeader>
+                    {/* Rankings */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        {/* Top products */}
+                        <div className="bg-white border border-gray-200 rounded-2xl shadow-theme-xs overflow-hidden">
+                            <div className="px-5 py-4 border-b border-gray-100">
+                                <h3 className="text-sm font-semibold text-gray-900">Top produits vendus</h3>
+                            </div>
                             <div>
                                 {topProducts.map((item, i) => (
-                                    <RankRow key={item.product_id}>
-                                        <RankNum>{i + 1}.</RankNum>
-                                        <RankInfo>
-                                            <RankName>{item.product?.name}</RankName>
-                                            <RankSub>{item.product?.category}</RankSub>
-                                        </RankInfo>
-                                        <RankValue>{item.total_sold}</RankValue>
-                                    </RankRow>
+                                    <div key={item.product_id} className="flex items-center gap-3 px-5 py-3 border-b border-gray-100 last:border-0">
+                                        <span className="text-xs text-gray-300 w-[18px] tabular-nums flex-shrink-0">{i + 1}.</span>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-gray-900 truncate">{item.product?.name}</p>
+                                            <p className="text-xs text-gray-400 mt-0.5 capitalize">{item.product?.category}</p>
+                                        </div>
+                                        <span className="text-sm font-semibold text-brand-500 tabular-nums flex-shrink-0">{item.total_sold}</span>
+                                    </div>
                                 ))}
-                                {topProducts.length === 0 && <EmptyState>Aucune donnée</EmptyState>}
+                                {topProducts.length === 0 && (
+                                    <p className="px-5 py-6 text-center text-sm text-gray-400">Aucune donnée</p>
+                                )}
                             </div>
-                        </TableCard>
+                        </div>
 
-                        <TableCard>
-                            <TableCardHeader>
-                                <TableCardTitle>Top clients</TableCardTitle>
-                            </TableCardHeader>
+                        {/* Top clients */}
+                        <div className="bg-white border border-gray-200 rounded-2xl shadow-theme-xs overflow-hidden">
+                            <div className="px-5 py-4 border-b border-gray-100">
+                                <h3 className="text-sm font-semibold text-gray-900">Top clients</h3>
+                            </div>
                             <div>
                                 {topClients.map((c, i) => (
-                                    <RankRow key={c.id}>
-                                        <RankNum>{i + 1}.</RankNum>
-                                        <ClientAvatar>{c.name[0]?.toUpperCase()}</ClientAvatar>
-                                        <RankName style={{ flex: 1 }}>{c.name}</RankName>
-                                        <SalesCount>{c.sales_count} achat(s)</SalesCount>
-                                    </RankRow>
+                                    <div key={c.id} className="flex items-center gap-3 px-5 py-3 border-b border-gray-100 last:border-0">
+                                        <span className="text-xs text-gray-300 w-[18px] tabular-nums flex-shrink-0">{i + 1}.</span>
+                                        <div className="w-7 h-7 rounded-full bg-brand-50 flex items-center justify-center text-[11px] font-semibold text-brand-600 flex-shrink-0">
+                                            {c.name[0]?.toUpperCase()}
+                                        </div>
+                                        <p className="flex-1 text-sm font-medium text-gray-900 truncate">{c.name}</p>
+                                        <span className="text-sm font-semibold text-success-600 tabular-nums flex-shrink-0">
+                                            {c.sales_count} achat(s)
+                                        </span>
+                                    </div>
                                 ))}
-                                {topClients.length === 0 && <EmptyState>Aucune donnée</EmptyState>}
+                                {topClients.length === 0 && (
+                                    <p className="px-5 py-6 text-center text-sm text-gray-400">Aucune donnée</p>
+                                )}
                             </div>
-                        </TableCard>
-                    </TablesGrid>
-                </PageWrapper>
+                        </div>
+                    </div>
+                </div>
             </AppLayout>
         </>
     )

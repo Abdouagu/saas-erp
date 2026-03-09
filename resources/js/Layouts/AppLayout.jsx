@@ -1,433 +1,232 @@
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
-import styled, { createGlobalStyle } from 'styled-components';
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+  LayoutDashboard, Package, ScanLine, ShoppingCart,
+  Users, CreditCard, BarChart2, LogOut, CheckCircle,
+  XCircle, ChevronLeft, ChevronRight, Menu,
+} from 'lucide-react';
 
-// ─── Palette ────────────────────────────────────────────────────────────────
-const C = {
-    pageBg:        '#F8FAFC',
-    sidebarBg:     '#FFFFFF',
-    sidebarBorder: '#E8EBF0',
-    cardBg:        '#FFFFFF',
-    primary:       '#6366F1',
-    textPrimary:   '#111827',
-    textSecondary: '#6B7280',
-    textMuted:     '#9CA3AF',
-    border:        '#E5E7EB',
-    activeNavBg:   '#EEF2FF',
-    activeNavText: '#4F46E5',
-    activeNavBar:  '#6366F1',
-    hoverNav:      '#F9FAFB',
-    flashSuccessBg:'#ECFDF5',
-    flashSuccessBd:'#A7F3D0',
-    flashSuccessTx:'#065F46',
-    flashErrorBg:  '#FEF2F2',
-    flashErrorBd:  '#FECACA',
-    flashErrorTx:  '#991B1B',
-    headerBg:      '#FFFFFF',
-    headerBorder:  '#E5E7EB',
-};
-
-// ─── Nav items ───────────────────────────────────────────────────────────────
+/* ── Navigation items ─────────────────────────────────── */
 const NAV = [
-    { href: '/dashboard',  label: 'Tableau de bord', icon: '⬡', match: '/dashboard' },
-    { href: '/products',   label: 'Produits',        icon: '◫', match: '/products' },
-    { href: '/scan',       label: 'Scanner',         icon: '⊡', match: '/scan' },
-    { href: '/sales',      label: 'Ventes',          icon: '◈', match: '/sales' },
-    { href: '/clients',    label: 'Clients',         icon: '◎', match: '/clients' },
-    { href: '/payments',   label: 'Paiements',       icon: '◇', match: '/payments' },
-    { href: '/stats',      label: 'Statistiques',    icon: '◉', match: '/stats' },
+  { href: '/dashboard',  label: 'Tableau de bord', icon: LayoutDashboard, match: '/dashboard' },
+  { href: '/products',   label: 'Produits',         icon: Package,         match: '/products' },
+  { href: '/scan',       label: 'Scanner',          icon: ScanLine,        match: '/scan' },
+  { href: '/sales',      label: 'Ventes',           icon: ShoppingCart,    match: '/sales' },
+  { href: '/clients',    label: 'Clients',          icon: Users,           match: '/clients' },
+  { href: '/payments',   label: 'Paiements',        icon: CreditCard,      match: '/payments' },
+  { href: '/stats',      label: 'Statistiques',     icon: BarChart2,       match: '/stats' },
 ];
 
-// ─── Styled components ───────────────────────────────────────────────────────
-const GlobalStyle = createGlobalStyle`
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif; }
-`;
-
-const Shell = styled.div`
-    display: flex;
-    height: 100vh;
-    background: ${C.pageBg};
-    overflow: hidden;
-`;
-
-const MobileOverlay = styled.div`
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.35);
-    z-index: 20;
-    display: none;
-
-    @media (max-width: 1023px) {
-        display: block;
-    }
-`;
-
-const Sidebar = styled.aside`
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    z-index: 30;
-    width: 224px;
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    background: ${C.sidebarBg};
-    border-right: 1px solid ${C.sidebarBorder};
-    transition: transform 200ms ease;
-
-    @media (min-width: 1024px) {
-        position: static;
-        transform: translateX(0) !important;
-    }
-
-    transform: ${({ $open }) => ($open ? 'translateX(0)' : 'translateX(-100%)')};
-`;
-
-const LogoArea = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 0 16px;
-    height: 56px;
-    border-bottom: 1px solid ${C.sidebarBorder};
-    flex-shrink: 0;
-`;
-
-const LogoSquare = styled.div`
-    width: 26px;
-    height: 26px;
-    background: ${C.primary};
-    border-radius: 7px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-
-    span {
-        color: #fff;
-        font-size: 13px;
-        font-weight: 700;
-        line-height: 1;
-    }
-`;
-
-const LogoText = styled.span`
-    font-size: 14px;
-    font-weight: 600;
-    color: ${C.textPrimary};
-    letter-spacing: -0.3px;
-`;
-
-const Nav = styled.nav`
-    flex: 1;
-    padding: 12px 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    overflow-y: auto;
-`;
-
-const NavLink = styled(Link)`
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 10px;
-    border-radius: 7px;
-    font-size: 13.5px;
-    font-weight: ${({ $active }) => ($active ? '500' : '400')};
-    color: ${({ $active }) => ($active ? C.activeNavText : C.textSecondary)};
-    background: ${({ $active }) => ($active ? C.activeNavBg : 'transparent')};
-    text-decoration: none;
-    transition: background 120ms ease, color 120ms ease;
-    cursor: pointer;
-
-    &::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 3px;
-        height: 18px;
-        background: ${C.activeNavBar};
-        border-radius: 0 3px 3px 0;
-        opacity: ${({ $active }) => ($active ? 1 : 0)};
-        transition: opacity 120ms ease;
-    }
-
-    &:hover {
-        background: ${({ $active }) => ($active ? C.activeNavBg : C.hoverNav)};
-        color: ${({ $active }) => ($active ? C.activeNavText : C.textPrimary)};
-    }
-`;
-
-const NavIcon = styled.span`
-    font-size: 15px;
-    line-height: 1;
-    color: ${({ $active }) => ($active ? C.primary : C.textMuted)};
-    flex-shrink: 0;
-`;
-
-const UserSection = styled.div`
-    border-top: 1px solid ${C.sidebarBorder};
-    padding: 12px 10px;
-    flex-shrink: 0;
-`;
-
-const UserRow = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 10px;
-    border-radius: 7px;
-`;
-
-const Avatar = styled.div`
-    width: 30px;
-    height: 30px;
-    background: #EEF2FF;
-    border: 1px solid #C7D2FE;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-
-    span {
-        font-size: 12px;
-        font-weight: 600;
-        color: ${C.primary};
-    }
-`;
-
-const UserInfo = styled.div`
-    flex: 1;
-    min-width: 0;
-`;
-
-const UserName = styled.p`
-    font-size: 12.5px;
-    font-weight: 500;
-    color: ${C.textPrimary};
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-`;
-
-const UserEmail = styled.p`
-    font-size: 11px;
-    color: ${C.textMuted};
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-`;
-
-const LogoutBtn = styled(Link)`
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    width: 100%;
-    margin-top: 4px;
-    padding: 7px 10px;
-    border-radius: 7px;
-    font-size: 12.5px;
-    color: ${C.textMuted};
-    text-decoration: none;
-    transition: background 120ms ease, color 120ms ease;
-    cursor: pointer;
-    background: transparent;
-    border: none;
-    text-align: left;
-
-    &:hover {
-        background: ${C.hoverNav};
-        color: ${C.textSecondary};
-    }
-`;
-
-const MainCol = styled.div`
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    overflow: hidden;
-`;
-
-const Topbar = styled.header`
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    height: 56px;
-    padding: 0 24px;
-    background: ${C.headerBg};
-    border-bottom: 1px solid ${C.headerBorder};
-    flex-shrink: 0;
-`;
-
-const HamburgerBtn = styled.button`
-    display: none;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: ${C.textMuted};
-    padding: 4px;
-    border-radius: 6px;
-    transition: color 120ms ease, background 120ms ease;
-
-    &:hover {
-        color: ${C.textPrimary};
-        background: ${C.hoverNav};
-    }
-
-    @media (max-width: 1023px) {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-`;
-
-const PageTitle = styled.h1`
-    font-size: 14px;
-    font-weight: 500;
-    color: ${C.textPrimary};
-`;
-
-const AlertsWrap = styled.div`
-    padding: 16px 24px 0;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-`;
-
-const Alert = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 16px;
-    border-radius: 10px;
-    font-size: 13.5px;
-    font-weight: 450;
-    background: ${({ $type }) => ($type === 'success' ? C.flashSuccessBg : C.flashErrorBg)};
-    border: 1px solid ${({ $type }) => ($type === 'success' ? C.flashSuccessBd : C.flashErrorBd)};
-    color: ${({ $type }) => ($type === 'success' ? C.flashSuccessTx : C.flashErrorTx)};
-`;
-
-const AlertDot = styled.span`
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: ${({ $type }) => ($type === 'success' ? '#A7F3D0' : '#FECACA')};
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    font-size: 11px;
-`;
-
-const Main = styled.main`
-    flex: 1;
-    overflow-y: auto;
-    padding: 24px;
-`;
-
-// ─── NavItem component ────────────────────────────────────────────────────────
-function NavItem({ href, label, icon, active }) {
-    return (
-        <NavLink href={href} $active={active}>
-            <NavIcon $active={active}>{icon}</NavIcon>
-            {label}
-        </NavLink>
-    );
+/* ── Single nav link ──────────────────────────────────── */
+function NavItem({ href, label, icon: Icon, active, showLabel }) {
+  return (
+    <Link
+      href={href}
+      className={`menu-item group ${active ? 'menu-item-active' : 'menu-item-inactive'} ${!showLabel ? 'justify-center px-0' : ''}`}
+    >
+      <span className={`flex-shrink-0 transition-colors ${active ? 'menu-item-icon-active' : 'menu-item-icon-inactive'}`}>
+        <Icon size={18} strokeWidth={1.8} />
+      </span>
+      {showLabel && <span className="truncate">{label}</span>}
+    </Link>
+  );
 }
 
-// ─── Layout ───────────────────────────────────────────────────────────────────
+/* ── Main layout ──────────────────────────────────────── */
 export default function AppLayout({ title, children }) {
-    const { auth, flash } = usePage().props;
-    const [sidebarOpen, setSidebarOpen] = useState(false);
-    const { url } = usePage();
+  const { auth, flash } = usePage().props;
+  const { url } = usePage();
 
-    const isActive = (match) =>
-        url === match || (match !== '/dashboard' && url.startsWith(match));
+  // Desktop sidebar toggle (expanded ↔ icon-only)
+  const [expanded, setExpanded] = useState(true);
+  // Hover-expand when collapsed
+  const [hovered, setHovered] = useState(false);
+  // Mobile slide-in
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-    return (
-        <>
-            <GlobalStyle />
-            <Shell>
-                {/* Mobile overlay */}
-                {sidebarOpen && (
-                    <MobileOverlay onClick={() => setSidebarOpen(false)} />
-                )}
+  const isActive = (match) =>
+    url === match || (match !== '/dashboard' && url.startsWith(match));
 
-                {/* Sidebar */}
-                <Sidebar $open={sidebarOpen}>
-                    <LogoArea>
-                        <LogoSquare><span>E</span></LogoSquare>
-                        <LogoText>ERP SaaS</LogoText>
-                    </LogoArea>
+  // Whether sidebar shows labels (expanded or hover-expanded or mobile open)
+  const showLabel = expanded || hovered || mobileOpen;
+  // Sidebar visual width
+  const sidebarExpanded = expanded || hovered;
 
-                    <Nav>
-                        {NAV.map((item) => (
-                            <NavItem
-                                key={item.href}
-                                {...item}
-                                active={isActive(item.match)}
-                            />
-                        ))}
-                    </Nav>
+  return (
+    <div className="flex min-h-screen bg-gray-50 font-outfit">
 
-                    <UserSection>
-                        <UserRow>
-                            <Avatar>
-                                <span>{auth.user?.name?.[0]?.toUpperCase()}</span>
-                            </Avatar>
-                            <UserInfo>
-                                <UserName>{auth.user?.name}</UserName>
-                                <UserEmail>{auth.user?.email}</UserEmail>
-                            </UserInfo>
-                        </UserRow>
-                        <LogoutBtn href="/logout" method="post" as="button">
-                            <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                            </svg>
-                            Déconnexion
-                        </LogoutBtn>
-                    </UserSection>
-                </Sidebar>
+      {/* ── Mobile backdrop ──────────────────────────── */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div
+            key="backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setMobileOpen(false)}
+            className="fixed inset-0 z-[998] bg-gray-900/50 lg:hidden"
+          />
+        )}
+      </AnimatePresence>
 
-                {/* Main column */}
-                <MainCol>
-                    <Topbar>
-                        <HamburgerBtn onClick={() => setSidebarOpen(true)}>
-                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
-                            </svg>
-                        </HamburgerBtn>
-                        <PageTitle>{title}</PageTitle>
-                    </Topbar>
+      {/* ── Sidebar ───────────────────────────────────── */}
+      <aside
+        onMouseEnter={() => !expanded && setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        className={[
+          'fixed top-0 left-0 bottom-0 z-[999] flex flex-col',
+          'bg-white border-r border-gray-200',
+          'transition-all duration-300 ease-in-out',
+          // Desktop width
+          sidebarExpanded ? 'lg:w-[290px]' : 'lg:w-[90px]',
+          // Mobile: full width when open, hidden when closed
+          mobileOpen ? 'w-[290px] translate-x-0' : 'w-[290px] -translate-x-full',
+          'lg:translate-x-0',
+        ].join(' ')}
+      >
+        {/* Logo / Brand */}
+        <div className={`flex items-center h-16 border-b border-gray-200 flex-shrink-0 overflow-hidden px-4 ${!showLabel ? 'lg:justify-center lg:px-0' : 'gap-3'}`}>
+          <div className="w-8 h-8 bg-brand-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-theme-sm">
+            <span className="text-white text-sm font-bold">E</span>
+          </div>
+          {showLabel && (
+            <div className="flex flex-col min-w-0">
+              <span className="text-sm font-semibold text-gray-900 truncate">ERP SaaS</span>
+              <span className="text-xs text-brand-500 font-medium">Vendeur</span>
+            </div>
+          )}
+        </div>
 
-                    {(flash?.success || flash?.error) && (
-                        <AlertsWrap>
-                            {flash.success && (
-                                <Alert $type="success">
-                                    <AlertDot $type="success">✓</AlertDot>
-                                    {flash.success}
-                                </Alert>
-                            )}
-                            {flash.error && (
-                                <Alert $type="error">
-                                    <AlertDot $type="error">✕</AlertDot>
-                                    {flash.error}
-                                </Alert>
-                            )}
-                        </AlertsWrap>
-                    )}
+        {/* Navigation */}
+        <div className="flex-1 overflow-y-auto no-scrollbar py-5">
+          {showLabel && (
+            <p className="mb-2 px-4 text-xs font-semibold uppercase tracking-wider text-gray-400">
+              Menu
+            </p>
+          )}
+          <nav className={`flex flex-col gap-0.5 ${showLabel ? 'px-3' : 'px-2'}`}>
+            {NAV.map((item) => (
+              <NavItem
+                key={item.href}
+                {...item}
+                active={isActive(item.match)}
+                showLabel={showLabel}
+              />
+            ))}
+          </nav>
+        </div>
 
-                    <Main>{children}</Main>
-                </MainCol>
-            </Shell>
-        </>
-    );
+        {/* User footer */}
+        <div className="border-t border-gray-200 p-3 flex-shrink-0">
+          {showLabel ? (
+            <div className="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-gray-50 transition-colors mb-1">
+              <div className="w-8 h-8 bg-brand-50 border border-brand-200 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-xs font-semibold text-brand-600">
+                  {auth.user?.name?.[0]?.toUpperCase()}
+                </span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-800 truncate">{auth.user?.name}</p>
+                <p className="text-xs text-gray-400 truncate">{auth.user?.email}</p>
+              </div>
+            </div>
+          ) : (
+            <div className="flex justify-center mb-1">
+              <div className="w-8 h-8 bg-brand-50 border border-brand-200 rounded-full flex items-center justify-center">
+                <span className="text-xs font-semibold text-brand-600">
+                  {auth.user?.name?.[0]?.toUpperCase()}
+                </span>
+              </div>
+            </div>
+          )}
+          <Link
+            href="/logout"
+            method="post"
+            as="button"
+            className={`flex items-center gap-2 w-full px-2 py-1.5 rounded-lg text-xs text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors ${!showLabel ? 'justify-center' : ''}`}
+          >
+            <LogOut size={14} />
+            {showLabel && 'Déconnexion'}
+          </Link>
+        </div>
+      </aside>
+
+      {/* ── Main content ──────────────────────────────── */}
+      {/*
+        On desktop: push content right by sidebar width.
+        Hover-expand is overlay (no layout shift).
+        On mobile: no margin (sidebar overlays).
+      */}
+      <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out ${expanded ? 'lg:ml-[290px]' : 'lg:ml-[90px]'}`}>
+
+        {/* Top header */}
+        <header className="sticky top-0 z-[99] flex items-center gap-3 h-16 px-4 lg:px-6 bg-white border-b border-gray-200 flex-shrink-0 shadow-theme-xs">
+          {/* Mobile hamburger */}
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="lg:hidden flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors"
+          >
+            <Menu size={18} />
+          </button>
+
+          {/* Desktop sidebar toggle */}
+          <button
+            onClick={() => { setExpanded((v) => !v); setHovered(false); }}
+            className="hidden lg:flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors"
+          >
+            {expanded ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
+          </button>
+
+          {/* Page title */}
+          <h1 className="text-sm font-semibold text-gray-800 flex-1 truncate">{title}</h1>
+
+          {/* User info */}
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex flex-col items-end leading-tight">
+              <span className="text-xs font-medium text-gray-700">{auth.user?.name}</span>
+              <span className="text-xs text-brand-500">Vendeur</span>
+            </div>
+            <div className="w-8 h-8 bg-brand-50 border border-brand-200 rounded-full flex items-center justify-center">
+              <span className="text-xs font-semibold text-brand-600">
+                {auth.user?.name?.[0]?.toUpperCase()}
+              </span>
+            </div>
+          </div>
+        </header>
+
+        {/* Flash messages */}
+        <AnimatePresence>
+          {(flash?.success || flash?.error) && (
+            <motion.div
+              key="flash"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="px-4 lg:px-6 pt-4 flex flex-col gap-2"
+            >
+              {flash.success && (
+                <div className="flex items-center gap-2.5 px-4 py-3 bg-success-50 border border-success-200 rounded-xl text-sm text-success-700">
+                  <CheckCircle size={15} className="text-success-500 flex-shrink-0" />
+                  {flash.success}
+                </div>
+              )}
+              {flash.error && (
+                <div className="flex items-center gap-2.5 px-4 py-3 bg-error-50 border border-error-200 rounded-xl text-sm text-error-700">
+                  <XCircle size={15} className="text-error-500 flex-shrink-0" />
+                  {flash.error}
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Page content */}
+        <main className="flex-1 p-4 lg:p-6">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
 }

@@ -1,273 +1,18 @@
-import styled from 'styled-components'
 import { Head, Link, useForm } from '@inertiajs/react'
 import { useState } from 'react'
+import { Plus } from 'lucide-react'
 import AppLayout from '../../../Layouts/AppLayout'
 import Badge from '../../../Components/Badge'
 import Modal from '../../../Components/Modal'
 import Pagination from '../../../Components/Pagination'
 
-const statusMap = { good: 'success', late: 'danger' }
+const statusMap   = { good: 'success', late: 'danger' }
 const statusLabel = { good: 'OK', late: 'En retard' }
 
-/* ── Styled Components ── */
-const PageWrapper = styled.div`
-    max-width: 1024px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-`
-
-const PageHeader = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-`
-
-const HeaderLeft = styled.div``
-
-const PageTitle = styled.h2`
-    font-size: 20px;
-    font-weight: 700;
-    color: #111827;
-    margin: 0;
-`
-
-const PageSubtitle = styled.p`
-    font-size: 14px;
-    color: #6B7280;
-    margin: 4px 0 0;
-`
-
-const PrimaryBtn = styled.button`
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: #6366F1;
-    color: #FFFFFF;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 18px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 1px 2px rgba(99,102,241,0.3);
-    transition: background 0.15s;
-    &:hover { background: #4F46E5; }
-`
-
-const TableContainer = styled.div`
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-`
-
-const Table = styled.table`
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-`
-
-const THeadRow = styled.tr`
-    background: #F9FAFB;
-    border-bottom: 2px solid #E5E7EB;
-`
-
-const TH = styled.th`
-    padding: 12px 20px;
-    text-align: left;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #9CA3AF;
-    white-space: nowrap;
-`
-
-const TR = styled.tr`
-    border-bottom: 1px solid #F3F4F6;
-    transition: background 0.15s;
-    &:last-child { border-bottom: none; }
-    &:hover { background: #FAFAFA; }
-`
-
-const TD = styled.td`
-    padding: 14px 20px;
-    vertical-align: middle;
-`
-
-const ClientAvatar = styled.div`
-    width: 30px;
-    height: 30px;
-    background: #EEF2FF;
-    border: 1px solid #C7D2FE;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 600;
-    color: #6366F1;
-    flex-shrink: 0;
-`
-
-const ClientNameRow = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 10px;
-`
-
-const ClientName = styled.span`
-    font-weight: 500;
-    color: #111827;
-`
-
-const MutedText = styled.span`
-    color: #9CA3AF;
-`
-
-const SalesCount = styled.span`
-    color: #374151;
-`
-
-const ActionGroup = styled.div`
-    display: flex;
-    justify-content: flex-end;
-`
-
-const ActionLink = styled(Link)`
-    padding: 6px 10px;
-    font-size: 12px;
-    color: #6B7280;
-    border-radius: 6px;
-    text-decoration: none;
-    transition: background 0.15s, color 0.15s;
-    &:hover { background: #F3F4F6; color: #111827; }
-`
-
-const EmptyCell = styled.td`
-    padding: 48px 20px;
-    text-align: center;
-    color: #9CA3AF;
-    font-size: 14px;
-`
-
-const PaginationWrap = styled.div`
-    padding: 12px 20px;
-    border-top: 1px solid #E5E7EB;
-`
-
-/* ── Modal Form ── */
-const FormStack = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-`
-
-const Grid2 = styled.div`
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-`
-
-const FieldWrap = styled.div``
-
-const Label = styled.label`
-    display: block;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #9CA3AF;
-    margin-bottom: 6px;
-`
-
-const Input = styled.input`
-    width: 100%;
-    box-sizing: border-box;
-    background: #FFFFFF;
-    border: 1.5px solid #E5E7EB;
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 14px;
-    color: #111827;
-    outline: none;
-    transition: border-color 0.15s, box-shadow 0.15s;
-    &::placeholder { color: #9CA3AF; }
-    &:focus {
-        border-color: #6366F1;
-        box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
-    }
-`
-
-const Textarea = styled.textarea`
-    width: 100%;
-    box-sizing: border-box;
-    background: #FFFFFF;
-    border: 1.5px solid #E5E7EB;
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 14px;
-    color: #111827;
-    outline: none;
-    resize: none;
-    font-family: inherit;
-    transition: border-color 0.15s, box-shadow 0.15s;
-    &:focus {
-        border-color: #6366F1;
-        box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
-    }
-`
-
-const ErrorMsg = styled.p`
-    font-size: 12px;
-    color: #EF4444;
-    margin: 4px 0 0;
-`
-
-const BtnRow = styled.div`
-    display: flex;
-    gap: 10px;
-    padding-top: 4px;
-`
-
-const SubmitBtn = styled.button`
-    padding: 10px 20px;
-    background: #6366F1;
-    color: #FFFFFF;
-    font-size: 14px;
-    font-weight: 600;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.15s;
-    &:hover:not(:disabled) { background: #4F46E5; }
-    &:disabled { opacity: 0.5; cursor: not-allowed; }
-`
-
-const CancelBtn = styled.button`
-    padding: 10px 20px;
-    background: #F3F4F6;
-    color: #6B7280;
-    font-size: 14px;
-    font-weight: 500;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s;
-    &:hover { background: #E5E7EB; color: #111827; }
-`
-
-const Field = ({ label, error, children }) => (
-    <FieldWrap>
-        <Label>{label}</Label>
-        {children}
-        {error && <ErrorMsg>{error}</ErrorMsg>}
-    </FieldWrap>
-)
+const inputCls = 'w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-300'
+const labelCls = 'block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1.5'
+const thCls    = 'px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-400'
+const tdCls    = 'px-4 py-3.5 text-sm text-gray-700 align-middle'
 
 export default function ClientsIndex({ clients }) {
     const [showModal, setShowModal] = useState(false)
@@ -284,109 +29,108 @@ export default function ClientsIndex({ clients }) {
         <>
             <Head title="Clients" />
             <AppLayout title="Clients">
-                <PageWrapper>
-                    <PageHeader>
-                        <HeaderLeft>
-                            <PageTitle>Clients</PageTitle>
-                            <PageSubtitle>{clients.total} clients enregistrés</PageSubtitle>
-                        </HeaderLeft>
-                        <PrimaryBtn onClick={() => setShowModal(true)}>
-                            <span>+</span> Nouveau client
-                        </PrimaryBtn>
-                    </PageHeader>
+                <div className="max-w-5xl flex flex-col gap-4">
+                    {/* Header */}
+                    <div className="flex items-center justify-between flex-wrap gap-3">
+                        <div>
+                            <h2 className="text-xl font-bold text-gray-900">Clients</h2>
+                            <p className="text-sm text-gray-500 mt-1">{clients.total} clients enregistrés</p>
+                        </div>
+                        <button
+                            onClick={() => setShowModal(true)}
+                            className="inline-flex items-center gap-2 bg-brand-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-brand-600 transition-colors cursor-pointer"
+                        >
+                            <Plus size={15} /> Nouveau client
+                        </button>
+                    </div>
 
-                    <TableContainer>
-                        <Table>
+                    {/* Table */}
+                    <div className="bg-white border border-gray-200 rounded-2xl shadow-theme-xs overflow-hidden">
+                        <table className="w-full border-collapse text-sm">
                             <thead>
-                                <THeadRow>
-                                    <TH>Nom</TH>
-                                    <TH>Téléphone</TH>
-                                    <TH>Email</TH>
-                                    <TH>Ventes</TH>
-                                    <TH>Statut</TH>
-                                    <TH style={{ textAlign: 'right' }}>Actions</TH>
-                                </THeadRow>
+                                <tr className="bg-gray-50 border-b border-gray-200">
+                                    <th className={thCls}>Nom</th>
+                                    <th className={thCls}>Téléphone</th>
+                                    <th className={thCls}>Email</th>
+                                    <th className={thCls}>Ventes</th>
+                                    <th className={thCls}>Statut</th>
+                                    <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-400">Actions</th>
+                                </tr>
                             </thead>
                             <tbody>
                                 {clients.data.map((c) => (
-                                    <TR key={c.id}>
-                                        <TD>
-                                            <ClientNameRow>
-                                                <ClientAvatar>{c.name[0]?.toUpperCase()}</ClientAvatar>
-                                                <ClientName>{c.name}</ClientName>
-                                            </ClientNameRow>
-                                        </TD>
-                                        <TD><MutedText>{c.phone ?? '—'}</MutedText></TD>
-                                        <TD><MutedText>{c.email ?? '—'}</MutedText></TD>
-                                        <TD><SalesCount>{c.sales_count}</SalesCount></TD>
-                                        <TD>
-                                            <Badge variant={statusMap[c.status] ?? 'default'}>
-                                                {statusLabel[c.status] ?? c.status}
-                                            </Badge>
-                                        </TD>
-                                        <TD>
-                                            <ActionGroup>
-                                                <ActionLink href={`/clients/${c.id}`}>Voir</ActionLink>
-                                            </ActionGroup>
-                                        </TD>
-                                    </TR>
+                                    <tr key={c.id} className="hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0">
+                                        <td className={tdCls}>
+                                            <div className="flex items-center gap-2.5">
+                                                <div className="w-7 h-7 rounded-full bg-brand-50 border border-brand-200 flex items-center justify-center text-xs font-semibold text-brand-600 flex-shrink-0">
+                                                    {c.name[0]?.toUpperCase()}
+                                                </div>
+                                                <span className="font-medium text-gray-900">{c.name}</span>
+                                            </div>
+                                        </td>
+                                        <td className={tdCls}><span className="text-gray-400">{c.phone ?? '—'}</span></td>
+                                        <td className={tdCls}><span className="text-gray-400">{c.email ?? '—'}</span></td>
+                                        <td className={tdCls}><span className="text-gray-700">{c.sales_count}</span></td>
+                                        <td className={tdCls}>
+                                            <Badge variant={statusMap[c.status] ?? 'default'}>{statusLabel[c.status] ?? c.status}</Badge>
+                                        </td>
+                                        <td className={tdCls}>
+                                            <div className="flex justify-end">
+                                                <Link href={`/clients/${c.id}`} className="px-2.5 py-1.5 text-xs text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-900 transition-colors">
+                                                    Voir
+                                                </Link>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 ))}
                                 {clients.data.length === 0 && (
-                                    <tr><EmptyCell colSpan={6}>Aucun client</EmptyCell></tr>
+                                    <tr>
+                                        <td colSpan={6} className="px-4 py-12 text-center text-sm text-gray-400">Aucun client</td>
+                                    </tr>
                                 )}
                             </tbody>
-                        </Table>
-                        <PaginationWrap>
+                        </table>
+                        <div className="px-4 py-3 border-t border-gray-100">
                             <Pagination links={clients.links} />
-                        </PaginationWrap>
-                    </TableContainer>
-                </PageWrapper>
+                        </div>
+                    </div>
+                </div>
 
-                <Modal show={showModal} onClose={() => setShowModal(false)} title="Nouveau client">
+                {/* New client modal */}
+                <Modal open={showModal} onClose={() => setShowModal(false)} title="Nouveau client">
                     <form onSubmit={submit}>
-                        <FormStack>
-                            <Field label="Nom *" error={errors.name}>
-                                <Input
-                                    value={data.name}
-                                    onChange={(e) => setData('name', e.target.value)}
-                                    placeholder="Jean Dupont"
-                                    autoFocus
-                                />
-                            </Field>
-                            <Grid2>
-                                <Field label="Téléphone" error={errors.phone}>
-                                    <Input
-                                        value={data.phone}
-                                        onChange={(e) => setData('phone', e.target.value)}
-                                        placeholder="+33 6 00 00 00 00"
-                                    />
-                                </Field>
-                                <Field label="Email" error={errors.email}>
-                                    <Input
-                                        type="email"
-                                        value={data.email}
-                                        onChange={(e) => setData('email', e.target.value)}
-                                        placeholder="jean@exemple.com"
-                                    />
-                                </Field>
-                            </Grid2>
-                            <Field label="Adresse" error={errors.address}>
-                                <Textarea
-                                    value={data.address}
-                                    onChange={(e) => setData('address', e.target.value)}
-                                    rows={2}
-                                    placeholder="Adresse complète..."
-                                />
-                            </Field>
-                            <BtnRow>
-                                <SubmitBtn type="submit" disabled={processing}>
+                        <div className="flex flex-col gap-3.5">
+                            <div>
+                                <label className={labelCls}>Nom *</label>
+                                <input value={data.name} onChange={(e) => setData('name', e.target.value)} placeholder="Jean Dupont" autoFocus className={inputCls} />
+                                {errors.name && <p className="text-xs text-error-500 mt-1">{errors.name}</p>}
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className={labelCls}>Téléphone</label>
+                                    <input value={data.phone} onChange={(e) => setData('phone', e.target.value)} placeholder="+33 6 00 00 00 00" className={inputCls} />
+                                    {errors.phone && <p className="text-xs text-error-500 mt-1">{errors.phone}</p>}
+                                </div>
+                                <div>
+                                    <label className={labelCls}>Email</label>
+                                    <input type="email" value={data.email} onChange={(e) => setData('email', e.target.value)} placeholder="jean@exemple.com" className={inputCls} />
+                                    {errors.email && <p className="text-xs text-error-500 mt-1">{errors.email}</p>}
+                                </div>
+                            </div>
+                            <div>
+                                <label className={labelCls}>Adresse</label>
+                                <textarea value={data.address} onChange={(e) => setData('address', e.target.value)} rows={2} placeholder="Adresse complète..." className={`${inputCls} resize-none`} />
+                                {errors.address && <p className="text-xs text-error-500 mt-1">{errors.address}</p>}
+                            </div>
+                            <div className="flex gap-2.5 pt-1">
+                                <button type="submit" disabled={processing} className="px-5 py-2.5 bg-brand-500 text-white text-sm font-semibold rounded-lg hover:bg-brand-600 transition-colors disabled:opacity-50 cursor-pointer">
                                     {processing ? 'Ajout...' : 'Ajouter'}
-                                </SubmitBtn>
-                                <CancelBtn type="button" onClick={() => setShowModal(false)}>
+                                </button>
+                                <button type="button" onClick={() => setShowModal(false)} className="px-5 py-2.5 bg-gray-100 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors cursor-pointer">
                                     Annuler
-                                </CancelBtn>
-                            </BtnRow>
-                        </FormStack>
+                                </button>
+                            </div>
+                        </div>
                     </form>
                 </Modal>
             </AppLayout>

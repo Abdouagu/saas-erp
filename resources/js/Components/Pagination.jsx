@@ -1,112 +1,51 @@
-import React from 'react';
 import { Link } from '@inertiajs/react';
-import styled, { css } from 'styled-components';
-
-const Wrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 16px;
-`;
-
-const activeStyles = css`
-  background: #6366F1;
-  color: #ffffff;
-  border-color: #6366F1;
-  font-weight: 600;
-`;
-
-const inactiveStyles = css`
-  background: #ffffff;
-  color: #4B5563;
-  border-color: #E5E7EB;
-
-  &:hover {
-    background: #F3F4F6;
-    color: #111827;
-    border-color: #D1D5DB;
-  }
-`;
-
-const disabledStyles = css`
-  opacity: 0.4;
-  pointer-events: none;
-  cursor: default;
-  background: #ffffff;
-  color: #6B7280;
-  border-color: #E5E7EB;
-`;
-
-const PageItem = styled(Link)`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 32px;
-  height: 32px;
-  padding: 0 8px;
-  border-radius: 6px;
-  border: 1px solid transparent;
-  font-size: 13px;
-  text-decoration: none;
-  transition: all 0.15s ease;
-
-  ${({ $active }) => ($active ? activeStyles : inactiveStyles)}
-`;
-
-const DisabledItem = styled.span`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 32px;
-  height: 32px;
-  padding: 0 8px;
-  border-radius: 6px;
-  border: 1px solid #E5E7EB;
-  font-size: 13px;
-  ${disabledStyles}
-`;
-
-const Ellipsis = styled.span`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 32px;
-  height: 32px;
-  padding: 0 4px;
-  font-size: 13px;
-  color: #9CA3AF;
-  user-select: none;
-`;
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function Pagination({ links }) {
   if (!links || links.length <= 3) return null;
 
   return (
-    <Wrapper>
+    <div className="flex items-center justify-center gap-1 mt-6">
       {links.map((link, i) => {
+        const isPrev = i === 0;
+        const isNext = i === links.length - 1;
+
         if (!link.url) {
-          // Ellipsis "..." separators or truly disabled prev/next
-          const isDots = link.label === '...';
-          if (isDots) {
-            return <Ellipsis key={i}>…</Ellipsis>;
+          if (link.label === '...') {
+            return (
+              <span key={i} className="px-3 py-1.5 text-sm text-gray-400">…</span>
+            );
           }
           return (
-            <DisabledItem
+            <span
               key={i}
-              dangerouslySetInnerHTML={{ __html: link.label }}
-            />
+              className="inline-flex items-center justify-center min-w-[34px] h-[34px] rounded-lg px-2 text-sm text-gray-300 cursor-not-allowed"
+            >
+              {isPrev ? <ChevronLeft size={14} /> : isNext ? <ChevronRight size={14} /> : null}
+              {!isPrev && !isNext && <span dangerouslySetInnerHTML={{ __html: link.label }} />}
+            </span>
           );
         }
 
         return (
-          <PageItem
+          <Link
             key={i}
             href={link.url}
-            $active={link.active}
-            dangerouslySetInnerHTML={{ __html: link.label }}
-          />
+            className={`inline-flex items-center justify-center min-w-[34px] h-[34px] rounded-lg px-2 text-sm font-medium transition-colors ${
+              link.active
+                ? 'bg-brand-500 text-white shadow-theme-xs'
+                : 'text-gray-600 hover:bg-gray-100'
+            }`}
+          >
+            {isPrev
+              ? <ChevronLeft size={14} />
+              : isNext
+              ? <ChevronRight size={14} />
+              : <span dangerouslySetInnerHTML={{ __html: link.label }} />
+            }
+          </Link>
         );
       })}
-    </Wrapper>
+    </div>
   );
 }

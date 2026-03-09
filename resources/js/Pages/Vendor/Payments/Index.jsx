@@ -1,172 +1,75 @@
-import styled from 'styled-components'
 import { Head, Link } from '@inertiajs/react'
 import AppLayout from '../../../Layouts/AppLayout'
 import Pagination from '../../../Components/Pagination'
 
 const fmt = (n) => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n)
 
-/* ── Styled Components ── */
-const PageWrapper = styled.div`
-    max-width: 1024px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-`
-
-const PageHeader = styled.div``
-
-const PageTitle = styled.h2`
-    font-size: 20px;
-    font-weight: 700;
-    color: #111827;
-    margin: 0;
-`
-
-const PageSubtitle = styled.p`
-    font-size: 14px;
-    color: #6B7280;
-    margin: 4px 0 0;
-`
-
-const TableContainer = styled.div`
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-`
-
-const Table = styled.table`
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-`
-
-const THeadRow = styled.tr`
-    background: #F9FAFB;
-    border-bottom: 2px solid #E5E7EB;
-`
-
-const TH = styled.th`
-    padding: 12px 20px;
-    text-align: left;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #9CA3AF;
-    white-space: nowrap;
-`
-
-const TR = styled.tr`
-    border-bottom: 1px solid #F3F4F6;
-    transition: background 0.15s;
-    &:last-child { border-bottom: none; }
-    &:hover { background: #FAFAFA; }
-`
-
-const TD = styled.td`
-    padding: 14px 20px;
-    vertical-align: middle;
-`
-
-const IdCell = styled.span`
-    font-family: ui-monospace, monospace;
-    font-size: 12px;
-    color: #9CA3AF;
-`
-
-const ClientName = styled.span`
-    font-weight: 500;
-    color: #111827;
-`
-
-const SaleLink = styled(Link)`
-    color: #6B7280;
-    text-decoration: none;
-    transition: color 0.15s;
-    &:hover { color: #6366F1; }
-`
-
-const AmountText = styled.span`
-    font-weight: 600;
-    color: #059669;
-    font-variant-numeric: tabular-nums;
-`
-
-const DateText = styled.span`
-    color: #6B7280;
-`
-
-const NoteText = styled.span`
-    color: #9CA3AF;
-`
-
-const EmptyCell = styled.td`
-    padding: 48px 20px;
-    text-align: center;
-    color: #9CA3AF;
-    font-size: 14px;
-`
-
-const PaginationWrap = styled.div`
-    padding: 12px 20px;
-    border-top: 1px solid #E5E7EB;
-`
+const thCls = 'px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-400'
+const tdCls = 'px-4 py-3.5 text-sm text-gray-700 align-middle'
 
 export default function PaymentsIndex({ payments }) {
     return (
         <>
             <Head title="Paiements" />
             <AppLayout title="Paiements">
-                <PageWrapper>
-                    <PageHeader>
-                        <PageTitle>Paiements</PageTitle>
-                        <PageSubtitle>{payments.total} paiements enregistrés</PageSubtitle>
-                    </PageHeader>
+                <div className="max-w-5xl flex flex-col gap-4">
+                    <div>
+                        <h2 className="text-xl font-bold text-gray-900">Paiements</h2>
+                        <p className="text-sm text-gray-500 mt-1">{payments.total} paiements enregistrés</p>
+                    </div>
 
-                    <TableContainer>
-                        <Table>
+                    <div className="bg-white border border-gray-200 rounded-2xl shadow-theme-xs overflow-hidden">
+                        <table className="w-full border-collapse text-sm">
                             <thead>
-                                <THeadRow>
-                                    <TH>#</TH>
-                                    <TH>Client</TH>
-                                    <TH>Vente</TH>
-                                    <TH>Montant</TH>
-                                    <TH>Date</TH>
-                                    <TH>Notes</TH>
-                                </THeadRow>
+                                <tr className="bg-gray-50 border-b border-gray-200">
+                                    <th className={thCls}>#</th>
+                                    <th className={thCls}>Client</th>
+                                    <th className={thCls}>Vente</th>
+                                    <th className={thCls}>Montant</th>
+                                    <th className={thCls}>Date</th>
+                                    <th className={thCls}>Notes</th>
+                                </tr>
                             </thead>
                             <tbody>
                                 {payments.data.map((p) => (
-                                    <TR key={p.id}>
-                                        <TD><IdCell>#{p.id}</IdCell></TD>
-                                        <TD>
+                                    <tr key={p.id} className="hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0">
+                                        <td className={tdCls}>
+                                            <span className="font-mono text-xs text-gray-400">#{p.id}</span>
+                                        </td>
+                                        <td className={tdCls}>
                                             {p.client?.name
-                                                ? <ClientName>{p.client.name}</ClientName>
-                                                : <NoteText>—</NoteText>
+                                                ? <span className="font-medium text-gray-900">{p.client.name}</span>
+                                                : <span className="text-gray-400">—</span>
                                             }
-                                        </TD>
-                                        <TD>
-                                            <SaleLink href={`/sales/${p.sale_id}`}>
+                                        </td>
+                                        <td className={tdCls}>
+                                            <Link href={`/sales/${p.sale_id}`} className="text-gray-500 hover:text-brand-500 transition-colors">
                                                 Vente #{p.sale_id}
-                                            </SaleLink>
-                                        </TD>
-                                        <TD><AmountText>{fmt(p.amount)}</AmountText></TD>
-                                        <TD><DateText>{p.payment_date}</DateText></TD>
-                                        <TD><NoteText>{p.notes ?? '—'}</NoteText></TD>
-                                    </TR>
+                                            </Link>
+                                        </td>
+                                        <td className={tdCls}>
+                                            <span className="font-semibold text-success-600 tabular-nums">{fmt(p.amount)}</span>
+                                        </td>
+                                        <td className={tdCls}>
+                                            <span className="text-gray-500">{p.payment_date}</span>
+                                        </td>
+                                        <td className={tdCls}>
+                                            <span className="text-gray-400">{p.notes ?? '—'}</span>
+                                        </td>
+                                    </tr>
                                 ))}
                                 {payments.data.length === 0 && (
-                                    <tr><EmptyCell colSpan={6}>Aucun paiement</EmptyCell></tr>
+                                    <tr>
+                                        <td colSpan={6} className="px-4 py-12 text-center text-sm text-gray-400">Aucun paiement</td>
+                                    </tr>
                                 )}
                             </tbody>
-                        </Table>
-                        <PaginationWrap>
+                        </table>
+                        <div className="px-4 py-3 border-t border-gray-100">
                             <Pagination links={payments.links} />
-                        </PaginationWrap>
-                    </TableContainer>
-                </PageWrapper>
+                        </div>
+                    </div>
+                </div>
             </AppLayout>
         </>
     )

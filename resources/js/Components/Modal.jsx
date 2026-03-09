@@ -1,100 +1,48 @@
-import React, { useEffect } from 'react';
-import styled from 'styled-components';
+import * as Dialog from '@radix-ui/react-dialog';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X } from 'lucide-react';
 
-const Overlay = styled.div`
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(4px);
-  z-index: 50;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-`;
-
-const Card = styled.div`
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 24px;
-  width: 100%;
-  max-width: 480px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-  position: relative;
-`;
-
-const ModalHeader = styled.div`
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 20px;
-`;
-
-const ModalTitle = styled.h3`
-  font-size: 16px;
-  font-weight: 600;
-  color: #111827;
-  margin: 0;
-`;
-
-const CloseButton = styled.button`
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  border: none;
-  background: transparent;
-  color: #9CA3AF;
-  font-size: 18px;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  flex-shrink: 0;
-  margin: -2px -2px 0 0;
-  transition: color 0.15s ease, background 0.15s ease;
-
-  &:hover {
-    color: #EF4444;
-    background: #FEF2F2;
-  }
-`;
-
-const ModalBody = styled.div`
-  /* children rendered directly */
-`;
-
-export default function Modal({ show, onClose, title, children }) {
-  useEffect(() => {
-    if (!show) {
-      document.body.style.overflow = '';
-      return () => {};
-    }
-
-    document.body.style.overflow = 'hidden';
-    const handler = (e) => {
-      if (e.key === 'Escape') onClose();
-    };
-    document.addEventListener('keydown', handler);
-    return () => {
-      document.removeEventListener('keydown', handler);
-      document.body.style.overflow = '';
-    };
-  }, [show, onClose]);
-
-  if (!show) return null;
-
+export default function Modal({ open, onClose, title, children, maxWidth = 'max-w-lg' }) {
   return (
-    <Overlay onClick={onClose}>
-      <Card onClick={(e) => e.stopPropagation()}>
-        <ModalHeader>
-          <ModalTitle>{title}</ModalTitle>
-          <CloseButton onClick={onClose} aria-label="Fermer">
-            ✕
-          </CloseButton>
-        </ModalHeader>
-        <ModalBody>{children}</ModalBody>
-      </Card>
-    </Overlay>
+    <Dialog.Root open={open} onOpenChange={(v) => !v && onClose()}>
+      <AnimatePresence>
+        {open && (
+          <Dialog.Portal forceMount>
+            <Dialog.Overlay asChild>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+                className="fixed inset-0 z-[9999] bg-gray-900/50 backdrop-blur-sm"
+              />
+            </Dialog.Overlay>
+            <Dialog.Content asChild>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.96, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.96, y: 10 }}
+                transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                className={`fixed left-1/2 top-1/2 z-[99999] w-full ${maxWidth} -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-theme-xl outline-none`}
+              >
+                {/* Header */}
+                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                  <Dialog.Title className="text-base font-semibold text-gray-900">
+                    {title}
+                  </Dialog.Title>
+                  <Dialog.Close asChild>
+                    <button className="flex items-center justify-center w-7 h-7 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer">
+                      <X size={15} />
+                    </button>
+                  </Dialog.Close>
+                </div>
+                {/* Body */}
+                <div className="px-6 py-5">{children}</div>
+              </motion.div>
+            </Dialog.Content>
+          </Dialog.Portal>
+        )}
+      </AnimatePresence>
+    </Dialog.Root>
   );
 }

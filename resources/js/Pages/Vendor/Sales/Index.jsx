@@ -1,5 +1,5 @@
-import styled from 'styled-components'
 import { Head, Link } from '@inertiajs/react'
+import { Plus, Eye, FileText } from 'lucide-react'
 import AppLayout from '../../../Layouts/AppLayout'
 import Badge from '../../../Components/Badge'
 import Pagination from '../../../Components/Pagination'
@@ -8,252 +8,108 @@ const fmt = (n) => new Intl.NumberFormat('fr-FR', { style: 'currency', currency:
 const statusMap = { paid: 'success', partial: 'warning', pending: 'danger' }
 const statusLabel = { paid: 'Payée', partial: 'Partielle', pending: 'En attente' }
 
-/* ── Styled Components ── */
-const PageWrapper = styled.div`
-    max-width: 1024px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-`
-
-const PageHeader = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-`
-
-const HeaderLeft = styled.div``
-
-const PageTitle = styled.h2`
-    font-size: 20px;
-    font-weight: 700;
-    color: #111827;
-    margin: 0;
-`
-
-const PageSubtitle = styled.p`
-    font-size: 14px;
-    color: #6B7280;
-    margin: 4px 0 0;
-`
-
-const PrimaryBtn = styled(Link)`
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: #6366F1;
-    color: #FFFFFF;
-    border-radius: 8px;
-    padding: 10px 18px;
-    font-size: 14px;
-    font-weight: 600;
-    text-decoration: none;
-    box-shadow: 0 1px 2px rgba(99,102,241,0.3);
-    transition: background 0.15s;
-    &:hover { background: #4F46E5; }
-`
-
-const TableContainer = styled.div`
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-`
-
-const Table = styled.table`
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-`
-
-const THead = styled.thead``
-
-const THeadRow = styled.tr`
-    background: #F9FAFB;
-    border-bottom: 2px solid #E5E7EB;
-`
-
-const TH = styled.th`
-    padding: 12px 20px;
-    text-align: left;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #9CA3AF;
-    white-space: nowrap;
-`
-
-const TBody = styled.tbody``
-
-const TR = styled.tr`
-    border-bottom: 1px solid #F3F4F6;
-    transition: background 0.15s;
-    &:last-child { border-bottom: none; }
-    &:hover { background: #FAFAFA; }
-`
-
-const TD = styled.td`
-    padding: 14px 20px;
-    vertical-align: middle;
-`
-
-const IdCell = styled.span`
-    font-family: ui-monospace, monospace;
-    font-size: 12px;
-    color: #9CA3AF;
-`
-
-const ClientName = styled.span`
-    font-weight: 500;
-    color: #111827;
-`
-
-const AnonClient = styled.span`
-    color: #9CA3AF;
-`
-
-const TotalAmount = styled.span`
-    font-weight: 600;
-    color: #111827;
-    font-variant-numeric: tabular-nums;
-`
-
-const PaidAmount = styled.span`
-    font-weight: 500;
-    color: #059669;
-    font-variant-numeric: tabular-nums;
-`
-
-const RemainingAmount = styled.span`
-    font-weight: 500;
-    color: #D97706;
-    font-variant-numeric: tabular-nums;
-`
-
-const NoRemaining = styled.span`
-    color: #D1D5DB;
-`
-
-const DateText = styled.span`
-    color: #6B7280;
-`
-
-const ActionGroup = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 4px;
-`
-
-const ActionLink = styled(Link)`
-    padding: 6px 10px;
-    font-size: 12px;
-    color: #6B7280;
-    border-radius: 6px;
-    text-decoration: none;
-    transition: background 0.15s, color 0.15s;
-    &:hover { background: #F3F4F6; color: #111827; }
-`
-
-const ActionA = styled.a`
-    padding: 6px 10px;
-    font-size: 12px;
-    color: #6B7280;
-    border-radius: 6px;
-    text-decoration: none;
-    transition: background 0.15s, color 0.15s;
-    &:hover { background: #F3F4F6; color: #111827; }
-`
-
-const EmptyRow = styled.tr``
-const EmptyCell = styled.td`
-    padding: 48px 20px;
-    text-align: center;
-    color: #9CA3AF;
-    font-size: 14px;
-`
-
-const PaginationWrap = styled.div`
-    padding: 12px 20px;
-    border-top: 1px solid #E5E7EB;
-`
+const thCls = 'px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-400'
+const tdCls = 'px-4 py-3.5 text-sm text-gray-700 align-middle'
 
 export default function SalesIndex({ sales }) {
     return (
         <>
             <Head title="Ventes" />
             <AppLayout title="Ventes">
-                <PageWrapper>
-                    <PageHeader>
-                        <HeaderLeft>
-                            <PageTitle>Ventes</PageTitle>
-                            <PageSubtitle>{sales.total} ventes enregistrées</PageSubtitle>
-                        </HeaderLeft>
-                        <PrimaryBtn href="/sales/create">
-                            <span>+</span> Nouvelle vente
-                        </PrimaryBtn>
-                    </PageHeader>
+                <div className="max-w-5xl flex flex-col gap-4">
+                    {/* Header */}
+                    <div className="flex items-center justify-between flex-wrap gap-3">
+                        <div>
+                            <h2 className="text-xl font-bold text-gray-900">Ventes</h2>
+                            <p className="text-sm text-gray-500 mt-1">{sales.total} ventes enregistrées</p>
+                        </div>
+                        <Link
+                            href="/sales/create"
+                            className="inline-flex items-center gap-2 bg-brand-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-brand-600 transition-colors cursor-pointer no-underline"
+                        >
+                            <Plus size={15} />
+                            Nouvelle vente
+                        </Link>
+                    </div>
 
-                    <TableContainer>
-                        <Table>
-                            <THead>
-                                <THeadRow>
-                                    <TH>#</TH>
-                                    <TH>Client</TH>
-                                    <TH>Total</TH>
-                                    <TH>Payé</TH>
-                                    <TH>Restant</TH>
-                                    <TH>Statut</TH>
-                                    <TH>Date</TH>
-                                    <TH style={{ textAlign: 'right' }}>Actions</TH>
-                                </THeadRow>
-                            </THead>
-                            <TBody>
+                    {/* Table */}
+                    <div className="bg-white border border-gray-200 rounded-2xl shadow-theme-xs overflow-hidden">
+                        <table className="w-full border-collapse text-sm">
+                            <thead>
+                                <tr className="bg-gray-50 border-b border-gray-200">
+                                    <th className={thCls}>#</th>
+                                    <th className={thCls}>Client</th>
+                                    <th className={thCls}>Total</th>
+                                    <th className={thCls}>Payé</th>
+                                    <th className={thCls}>Restant</th>
+                                    <th className={thCls}>Statut</th>
+                                    <th className={thCls}>Date</th>
+                                    <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-400">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                                 {sales.data.map((s) => (
-                                    <TR key={s.id}>
-                                        <TD><IdCell>#{s.id}</IdCell></TD>
-                                        <TD>
+                                    <tr key={s.id} className="hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0">
+                                        <td className={tdCls}>
+                                            <span className="font-mono text-xs text-gray-400">#{s.id}</span>
+                                        </td>
+                                        <td className={tdCls}>
                                             {s.client?.name
-                                                ? <ClientName>{s.client.name}</ClientName>
-                                                : <AnonClient>Anonyme</AnonClient>
+                                                ? <span className="font-medium text-gray-900">{s.client.name}</span>
+                                                : <span className="text-gray-400">Anonyme</span>
                                             }
-                                        </TD>
-                                        <TD><TotalAmount>{fmt(s.final_amount)}</TotalAmount></TD>
-                                        <TD><PaidAmount>{fmt(s.paid_amount)}</PaidAmount></TD>
-                                        <TD>
+                                        </td>
+                                        <td className={tdCls}>
+                                            <span className="font-semibold text-gray-900 tabular-nums">{fmt(s.final_amount)}</span>
+                                        </td>
+                                        <td className={tdCls}>
+                                            <span className="font-medium text-success-600 tabular-nums">{fmt(s.paid_amount)}</span>
+                                        </td>
+                                        <td className={tdCls}>
                                             {s.final_amount - s.paid_amount > 0
-                                                ? <RemainingAmount>{fmt(s.final_amount - s.paid_amount)}</RemainingAmount>
-                                                : <NoRemaining>—</NoRemaining>
+                                                ? <span className="font-medium text-warning-600 tabular-nums">{fmt(s.final_amount - s.paid_amount)}</span>
+                                                : <span className="text-gray-300">—</span>
                                             }
-                                        </TD>
-                                        <TD>
+                                        </td>
+                                        <td className={tdCls}>
                                             <Badge variant={statusMap[s.status]}>{statusLabel[s.status]}</Badge>
-                                        </TD>
-                                        <TD><DateText>{new Date(s.created_at).toLocaleDateString('fr-FR')}</DateText></TD>
-                                        <TD>
-                                            <ActionGroup>
-                                                <ActionLink href={`/sales/${s.id}`}>Voir</ActionLink>
-                                                <ActionA href={`/sales/${s.id}/invoice/pdf`} target="_blank">PDF</ActionA>
-                                            </ActionGroup>
-                                        </TD>
-                                    </TR>
+                                        </td>
+                                        <td className={tdCls}>
+                                            <span className="text-gray-500">{new Date(s.created_at).toLocaleDateString('fr-FR')}</span>
+                                        </td>
+                                        <td className={tdCls}>
+                                            <div className="flex items-center justify-end gap-1">
+                                                <Link
+                                                    href={`/sales/${s.id}`}
+                                                    className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                                                >
+                                                    <Eye size={12} /> Voir
+                                                </Link>
+                                                <a
+                                                    href={`/sales/${s.id}/invoice/pdf`}
+                                                    target="_blank"
+                                                    className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs text-gray-500 rounded-lg hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                                                >
+                                                    <FileText size={12} /> PDF
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
                                 ))}
                                 {sales.data.length === 0 && (
-                                    <EmptyRow>
-                                        <EmptyCell colSpan={8}>Aucune vente</EmptyCell>
-                                    </EmptyRow>
+                                    <tr>
+                                        <td colSpan={8} className="px-4 py-12 text-center text-sm text-gray-400">
+                                            Aucune vente
+                                        </td>
+                                    </tr>
                                 )}
-                            </TBody>
-                        </Table>
-                        <PaginationWrap>
+                            </tbody>
+                        </table>
+                        <div className="px-4 py-3 border-t border-gray-100">
                             <Pagination links={sales.links} />
-                        </PaginationWrap>
-                    </TableContainer>
-                </PageWrapper>
+                        </div>
+                    </div>
+                </div>
             </AppLayout>
         </>
     )

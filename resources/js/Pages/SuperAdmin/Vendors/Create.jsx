@@ -1,285 +1,137 @@
-import React from 'react';
-import { Head, Link, useForm } from '@inertiajs/react';
-import styled from 'styled-components';
-import AdminLayout from '../../../Layouts/AdminLayout';
+import { Head, Link, useForm } from '@inertiajs/react'
+import { ArrowLeft } from 'lucide-react'
+import AdminLayout from '../../../Layouts/AdminLayout'
 
-// ─── Layout ───────────────────────────────────────────────────────────────────
-const PageContainer = styled.div`
-  max-width: 600px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-`;
+const labelCls = 'block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1.5'
 
-const BackLink = styled(Link)`
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #6B7280;
-  text-decoration: none;
-  margin-bottom: 8px;
-  transition: color 0.15s;
-
-  &:hover { color: #111827; }
-`;
-
-const PageTitle = styled.h2`
-  font-size: 20px;
-  font-weight: 700;
-  color: #111827;
-  margin: 0 0 4px 0;
-`;
-
-const PageSubtitle = styled.p`
-  font-size: 14px;
-  color: #6B7280;
-  margin: 0;
-`;
-
-// ─── Form card ────────────────────────────────────────────────────────────────
-const FormCard = styled.div`
-  background: #FFFFFF;
-  border: 1px solid #E5E7EB;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  padding: 28px;
-`;
-
-const FormStack = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-`;
-
-const Grid2 = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-`;
-
-// ─── Field ────────────────────────────────────────────────────────────────────
-const FieldWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const Label = styled.label`
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #9CA3AF;
-  margin-bottom: 6px;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  box-sizing: border-box;
-  background: #FFFFFF;
-  border: 1.5px solid ${({ $err }) => ($err ? '#EF4444' : '#E5E7EB')};
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-size: 14px;
-  color: #111827;
-  outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
-
-  &::placeholder { color: #9CA3AF; }
-
-  &:focus {
-    border-color: ${({ $err }) => ($err ? '#EF4444' : '#6366F1')};
-    box-shadow: 0 0 0 3px ${({ $err }) =>
-      $err ? 'rgba(239,68,68,0.1)' : 'rgba(99,102,241,0.1)'};
-  }
-`;
-
-const Textarea = styled.textarea`
-  width: 100%;
-  box-sizing: border-box;
-  background: #FFFFFF;
-  border: 1.5px solid ${({ $err }) => ($err ? '#EF4444' : '#E5E7EB')};
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-size: 14px;
-  color: #111827;
-  outline: none;
-  resize: none;
-  font-family: inherit;
-  transition: border-color 0.15s, box-shadow 0.15s;
-
-  &::placeholder { color: #9CA3AF; }
-
-  &:focus {
-    border-color: ${({ $err }) => ($err ? '#EF4444' : '#6366F1')};
-    box-shadow: 0 0 0 3px ${({ $err }) =>
-      $err ? 'rgba(239,68,68,0.1)' : 'rgba(99,102,241,0.1)'};
-  }
-`;
-
-const ErrMsg = styled.p`
-  font-size: 12px;
-  color: #EF4444;
-  margin: 5px 0 0 0;
-`;
-
-// ─── Buttons ──────────────────────────────────────────────────────────────────
-const BtnRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding-top: 4px;
-`;
-
-const AmberBtn = styled.button`
-  padding: 10px 20px;
-  background: #F59E0B;
-  color: #FFFFFF;
-  font-size: 14px;
-  font-weight: 600;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
-  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.25);
-
-  &:hover:not(:disabled) {
-    background: #D97706;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
-  }
-
-  &:active:not(:disabled) { transform: translateY(0); }
-  &:disabled { opacity: 0.6; cursor: not-allowed; box-shadow: none; }
-`;
-
-const CancelLink = styled(Link)`
-  padding: 10px 20px;
-  background: #F3F4F6;
-  color: #6B7280;
-  font-size: 14px;
-  font-weight: 500;
-  border-radius: 8px;
-  text-decoration: none;
-  transition: background 0.15s, color 0.15s;
-
-  &:hover {
-    background: #E5E7EB;
-    color: #111827;
-  }
-`;
-
-// ─── Field component ──────────────────────────────────────────────────────────
 const Field = ({ label, error, children }) => (
-  <FieldWrapper>
-    <Label>{label}</Label>
-    {children}
-    {error && <ErrMsg>{error}</ErrMsg>}
-  </FieldWrapper>
-);
+    <div className="flex flex-col">
+        <label className={labelCls}>{label}</label>
+        {children}
+        {error && <p className="text-xs text-error-500 mt-1.5">{error}</p>}
+    </div>
+)
 
-// ─── Component ────────────────────────────────────────────────────────────────
 export default function VendorCreate() {
-  const { data, setData, post, processing, errors } = useForm({
-    name: '',
-    email: '',
-    password: '',
-    password_confirmation: '',
-    phone: '',
-    address: '',
-  });
+    const { data, setData, post, processing, errors } = useForm({
+        name: '',
+        email: '',
+        password: '',
+        password_confirmation: '',
+        phone: '',
+        address: '',
+    })
 
-  const submit = (e) => {
-    e.preventDefault();
-    post('/superadmin/vendors');
-  };
+    const submit = (e) => {
+        e.preventDefault()
+        post('/superadmin/vendors')
+    }
 
-  return (
-    <>
-      <Head title="Nouveau vendeur" />
-      <AdminLayout title="Nouveau vendeur">
-        <PageContainer>
-          <div>
-            <BackLink href="/superadmin/vendors">← Retour aux vendeurs</BackLink>
-            <PageTitle>Créer un vendeur</PageTitle>
-            <PageSubtitle>Le vendeur recevra accès à sa propre interface</PageSubtitle>
-          </div>
+    const inputCls = (hasError) =>
+        `w-full px-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-300 transition-colors ${
+            hasError ? 'border-error-400' : 'border-gray-200'
+        }`
 
-          <FormCard>
-            <form onSubmit={submit}>
-              <FormStack>
-                <Field label="Nom complet" error={errors.name}>
-                  <Input
-                    value={data.name}
-                    onChange={(e) => setData('name', e.target.value)}
-                    $err={!!errors.name}
-                    placeholder="Jean Dupont"
-                    autoFocus
-                  />
-                </Field>
+    return (
+        <>
+            <Head title="Nouveau vendeur" />
+            <AdminLayout title="Nouveau vendeur">
+                <div className="max-w-xl flex flex-col gap-5">
+                    <div>
+                        <Link
+                            href="/superadmin/vendors"
+                            className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-orange-500 transition-colors mb-3"
+                        >
+                            <ArrowLeft size={14} />
+                            Retour aux vendeurs
+                        </Link>
+                        <h2 className="text-xl font-bold text-gray-900">Créer un vendeur</h2>
+                        <p className="text-sm text-gray-500 mt-1">Le vendeur recevra accès à sa propre interface</p>
+                    </div>
 
-                <Field label="Email" error={errors.email}>
-                  <Input
-                    type="email"
-                    value={data.email}
-                    onChange={(e) => setData('email', e.target.value)}
-                    $err={!!errors.email}
-                    placeholder="jean@exemple.com"
-                  />
-                </Field>
+                    <div className="bg-white border border-gray-200 rounded-2xl shadow-theme-xs p-6">
+                        <form onSubmit={submit}>
+                            <div className="flex flex-col gap-4">
+                                <Field label="Nom complet *" error={errors.name}>
+                                    <input
+                                        value={data.name}
+                                        onChange={(e) => setData('name', e.target.value)}
+                                        placeholder="Jean Dupont"
+                                        autoFocus
+                                        className={inputCls(!!errors.name)}
+                                    />
+                                </Field>
 
-                <Grid2>
-                  <Field label="Mot de passe" error={errors.password}>
-                    <Input
-                      type="password"
-                      value={data.password}
-                      onChange={(e) => setData('password', e.target.value)}
-                      $err={!!errors.password}
-                      placeholder="Min. 8 caractères"
-                    />
-                  </Field>
-                  <Field label="Confirmer" error={errors.password_confirmation}>
-                    <Input
-                      type="password"
-                      value={data.password_confirmation}
-                      onChange={(e) => setData('password_confirmation', e.target.value)}
-                      $err={!!errors.password_confirmation}
-                      placeholder="Répéter"
-                    />
-                  </Field>
-                </Grid2>
+                                <Field label="Email *" error={errors.email}>
+                                    <input
+                                        type="email"
+                                        value={data.email}
+                                        onChange={(e) => setData('email', e.target.value)}
+                                        placeholder="jean@exemple.com"
+                                        className={inputCls(!!errors.email)}
+                                    />
+                                </Field>
 
-                <Field label="Téléphone" error={errors.phone}>
-                  <Input
-                    value={data.phone}
-                    onChange={(e) => setData('phone', e.target.value)}
-                    $err={!!errors.phone}
-                    placeholder="+33 6 00 00 00 00"
-                  />
-                </Field>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <Field label="Mot de passe *" error={errors.password}>
+                                        <input
+                                            type="password"
+                                            value={data.password}
+                                            onChange={(e) => setData('password', e.target.value)}
+                                            placeholder="Min. 8 caractères"
+                                            className={inputCls(!!errors.password)}
+                                        />
+                                    </Field>
+                                    <Field label="Confirmer *" error={errors.password_confirmation}>
+                                        <input
+                                            type="password"
+                                            value={data.password_confirmation}
+                                            onChange={(e) => setData('password_confirmation', e.target.value)}
+                                            placeholder="Répéter"
+                                            className={inputCls(!!errors.password_confirmation)}
+                                        />
+                                    </Field>
+                                </div>
 
-                <Field label="Adresse" error={errors.address}>
-                  <Textarea
-                    value={data.address}
-                    onChange={(e) => setData('address', e.target.value)}
-                    $err={!!errors.address}
-                    rows={3}
-                    placeholder="Adresse complète..."
-                  />
-                </Field>
+                                <Field label="Téléphone" error={errors.phone}>
+                                    <input
+                                        value={data.phone}
+                                        onChange={(e) => setData('phone', e.target.value)}
+                                        placeholder="+33 6 00 00 00 00"
+                                        className={inputCls(!!errors.phone)}
+                                    />
+                                </Field>
 
-                <BtnRow>
-                  <AmberBtn type="submit" disabled={processing}>
-                    {processing ? 'Création...' : 'Créer le vendeur'}
-                  </AmberBtn>
-                  <CancelLink href="/superadmin/vendors">Annuler</CancelLink>
-                </BtnRow>
-              </FormStack>
-            </form>
-          </FormCard>
-        </PageContainer>
-      </AdminLayout>
-    </>
-  );
+                                <Field label="Adresse" error={errors.address}>
+                                    <textarea
+                                        value={data.address}
+                                        onChange={(e) => setData('address', e.target.value)}
+                                        rows={3}
+                                        placeholder="Adresse complète..."
+                                        className={`${inputCls(!!errors.address)} resize-none`}
+                                    />
+                                </Field>
+
+                                <div className="flex items-center gap-3 pt-1">
+                                    <button
+                                        type="submit"
+                                        disabled={processing}
+                                        className="px-5 py-2.5 bg-orange-500 text-white text-sm font-semibold rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 cursor-pointer"
+                                    >
+                                        {processing ? 'Création...' : 'Créer le vendeur'}
+                                    </button>
+                                    <Link
+                                        href="/superadmin/vendors"
+                                        className="px-5 py-2.5 bg-gray-100 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors"
+                                    >
+                                        Annuler
+                                    </Link>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </AdminLayout>
+        </>
+    )
 }

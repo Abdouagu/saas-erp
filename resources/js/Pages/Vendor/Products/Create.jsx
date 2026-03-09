@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import styled from 'styled-components'
 import { Head, useForm, Link } from '@inertiajs/react'
+import { Camera } from 'lucide-react'
 import AppLayout from '../../../Layouts/AppLayout'
 
 /* ── Static data ──────────────────────────────────────────────────────────── */
@@ -34,229 +34,19 @@ const COLORS = ['Noir','Blanc','Bleu','Rouge','Vert','Gris','Or','Argent','Viole
 const PHONE_STORAGE = ['32GB','64GB','128GB','256GB','512GB','1TB']
 const PC_STORAGE    = ['128GB SSD','256GB SSD','512GB SSD','1TB SSD','2TB SSD','512GB HDD','1TB HDD','2TB HDD']
 
-/* ── Styled Components ────────────────────────────────────────────────────── */
-const PageWrapper = styled.div`
-    max-width: 680px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-`
+/* ── Shared class strings ──────────────────────────────────────────────────── */
+const inputCls   = 'w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-300 bg-white text-gray-900 placeholder:text-gray-400'
+const labelCls   = 'block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1.5'
+const cardCls    = 'bg-white border border-gray-200 rounded-2xl p-6 shadow-theme-xs'
+const sectionCls = 'text-xs font-semibold uppercase tracking-wide text-gray-400 mb-4 pb-2 border-b border-gray-100'
 
-const BackLink = styled(Link)`
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 13px;
-    color: #9CA3AF;
-    text-decoration: none;
-    margin-bottom: 8px;
-    transition: color 0.15s;
-    &:hover { color: #6366F1; }
-`
-
-const PageTitle = styled.h2`
-    font-size: 20px;
-    font-weight: 700;
-    color: #111827;
-    margin: 0;
-`
-
-const PageSubtitle = styled.p`
-    font-size: 14px;
-    color: #6B7280;
-    margin: 4px 0 0;
-`
-
-const Card = styled.div`
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 12px;
-    padding: 24px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-`
-
-const SectionTitle = styled.p`
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: #9CA3AF;
-    margin: 0 0 12px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid #F3F4F6;
-`
-
-const FormGrid2 = styled.div`
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-`
-
-const FieldWrap = styled.div`
-    display: flex;
-    flex-direction: column;
-`
-
-const Label = styled.label`
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #9CA3AF;
-    margin-bottom: 6px;
-`
-
-const Input = styled.input`
-    background: #FFFFFF;
-    border: 1.5px solid #E5E7EB;
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 14px;
-    color: #111827;
-    outline: none;
-    width: 100%;
-    box-sizing: border-box;
-    transition: border-color 0.15s, box-shadow 0.15s;
-    &::placeholder { color: #9CA3AF; }
-    &:focus {
-        border-color: #6366F1;
-        box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
-    }
-`
-
-const Select = styled.select`
-    background: #FFFFFF;
-    border: 1.5px solid #E5E7EB;
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 14px;
-    color: #111827;
-    outline: none;
-    width: 100%;
-    box-sizing: border-box;
-    cursor: pointer;
-    transition: border-color 0.15s, box-shadow 0.15s;
-    &:focus {
-        border-color: #6366F1;
-        box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
-    }
-`
-
-const ErrorMsg = styled.p`
-    font-size: 12px;
-    color: #EF4444;
-    margin: 4px 0 0;
-`
-
-/* Photo upload zone */
-const PhotoZone = styled.label`
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 16px;
-    border: 2px dashed #E5E7EB;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: border-color 0.15s, background 0.15s;
-    &:hover { border-color: #6366F1; background: #F5F3FF; }
-`
-
-const PhotoPreview = styled.img`
-    width: 72px;
-    height: 72px;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 1px solid #E5E7EB;
-    flex-shrink: 0;
-`
-
-const PhotoPlaceholder = styled.div`
-    width: 72px;
-    height: 72px;
-    background: #F3F4F6;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    color: #9CA3AF;
-    font-size: 28px;
-`
-
-const PhotoMeta = styled.div`
-    flex: 1;
-`
-
-const PhotoTitle = styled.p`
-    font-size: 14px;
-    font-weight: 500;
-    color: #374151;
-    margin: 0 0 2px;
-`
-
-const PhotoHint = styled.p`
-    font-size: 12px;
-    color: #9CA3AF;
-    margin: 0;
-`
-
-/* Profit indicator */
-const ProfitBadge = styled.div`
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    margin-top: 8px;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
-    background: ${({ $pos }) => $pos ? '#ECFDF5' : '#FEF2F2'};
-    color: ${({ $pos }) => $pos ? '#059669' : '#EF4444'};
-`
-
-const BtnGroup = styled.div`
-    display: flex;
-    gap: 10px;
-    padding-top: 8px;
-`
-
-const PrimaryBtn = styled.button`
-    background: #6366F1;
-    color: #FFFFFF;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 18px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 1px 2px rgba(99,102,241,0.3);
-    transition: background 0.15s;
-    &:hover:not(:disabled) { background: #4F46E5; }
-    &:disabled { opacity: 0.5; cursor: not-allowed; }
-`
-
-const CancelBtn = styled(Link)`
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 8px;
-    padding: 10px 18px;
-    font-size: 14px;
-    font-weight: 600;
-    color: #374151;
-    text-decoration: none;
-    transition: background 0.15s;
-    &:hover { background: #F9FAFB; }
-`
-
+/* ── Field helper ─────────────────────────────────────────────────────────── */
 const Field = ({ label, error, children }) => (
-    <FieldWrap>
-        <Label>{label}</Label>
+    <div className="flex flex-col">
+        <label className={labelCls}>{label}</label>
         {children}
-        {error && <ErrorMsg>{error}</ErrorMsg>}
-    </FieldWrap>
+        {error && <p className="text-xs text-error-500 mt-1">{error}</p>}
+    </div>
 )
 
 /* ── Component ────────────────────────────────────────────────────────────── */
@@ -264,49 +54,39 @@ export default function ProductCreate({ product }) {
     const isEdit = !!product
 
     const { data, setData, post, put, processing, errors } = useForm({
-        category: product?.category ?? 'phone',
-        brand:    product?.brand ?? '',
-        name:     product?.name ?? '',
+        category:           product?.category ?? 'phone',
+        brand:              product?.brand ?? '',
+        name:               product?.name ?? '',
         serial_number:      product?.serial_number ?? '',
         battery_percentage: product?.battery_percentage ?? '',
-        storage:  product?.storage ?? '',
-        color:    product?.color ?? '',
-        condition: product?.condition ?? 'used',
-        purchase_price: product?.purchase_price ?? '',
-        selling_price:  product?.selling_price ?? '',
-        photo: null,
+        storage:            product?.storage ?? '',
+        color:              product?.color ?? '',
+        condition:          product?.condition ?? 'used',
+        purchase_price:     product?.purchase_price ?? '',
+        selling_price:      product?.selling_price ?? '',
+        photo:              null,
     })
 
-    const [preview, setPreview] = useState(product?.photo_url ?? null)
+    const [preview, setPreview]         = useState(product?.photo_url ?? null)
     const [customModel, setCustomModel] = useState(false)
 
-    /* Derived data */
-    const BRANDS = data.category === 'phone' ? PHONE_BRANDS : PC_BRANDS
-    const brandList = Object.keys(BRANDS)
-    const modelList = data.brand && BRANDS[data.brand] ? [...BRANDS[data.brand], 'Autre'] : []
+    const BRANDS     = data.category === 'phone' ? PHONE_BRANDS : PC_BRANDS
+    const brandList  = Object.keys(BRANDS)
+    const modelList  = data.brand && BRANDS[data.brand] ? [...BRANDS[data.brand], 'Autre'] : []
     const storageList = data.category === 'phone' ? PHONE_STORAGE : PC_STORAGE
 
-    /* Handlers */
     const handleCategory = (val) => {
         setData(d => ({ ...d, category: val, brand: '', name: '' }))
         setCustomModel(false)
     }
-
     const handleBrand = (val) => {
         setData(d => ({ ...d, brand: val, name: '' }))
         setCustomModel(false)
     }
-
     const handleModel = (val) => {
-        if (val === 'Autre') {
-            setCustomModel(true)
-            setData('name', '')
-        } else {
-            setCustomModel(false)
-            setData('name', val)
-        }
+        if (val === 'Autre') { setCustomModel(true); setData('name', '') }
+        else { setCustomModel(false); setData('name', val) }
     }
-
     const handlePhoto = (e) => {
         const file = e.target.files[0]
         if (!file) return
@@ -314,205 +94,174 @@ export default function ProductCreate({ product }) {
         setPreview(URL.createObjectURL(file))
     }
 
-    const profit = (parseFloat(data.selling_price) || 0) - (parseFloat(data.purchase_price) || 0)
+    const profit     = (parseFloat(data.selling_price) || 0) - (parseFloat(data.purchase_price) || 0)
     const showProfit = data.purchase_price !== '' && data.selling_price !== ''
 
     const submit = (e) => {
         e.preventDefault()
-        if (isEdit) {
-            // Inertia v2 auto-uses FormData when photo (File) is present
-            put(`/products/${product.id}`)
-        } else {
-            post('/products')
-        }
+        isEdit ? put(`/products/${product.id}`) : post('/products')
     }
 
     return (
         <>
             <Head title={isEdit ? 'Modifier produit' : 'Nouveau produit'} />
             <AppLayout title={isEdit ? `Modifier : ${product.name}` : 'Nouveau produit'}>
-                <PageWrapper>
+                <div className="max-w-2xl flex flex-col gap-4">
+
+                    {/* Page header */}
                     <div>
-                        <BackLink href="/products">← Retour aux produits</BackLink>
-                        <PageTitle>{isEdit ? `Modifier : ${product.name}` : 'Ajouter un produit'}</PageTitle>
-                        <PageSubtitle>
+                        <Link
+                            href="/products"
+                            className="inline-flex items-center gap-1 text-sm text-gray-400 no-underline mb-2 hover:text-brand-500 transition-colors"
+                        >
+                            ← Retour aux produits
+                        </Link>
+                        <h2 className="text-xl font-bold text-gray-900 m-0">
+                            {isEdit ? `Modifier : ${product.name}` : 'Ajouter un produit'}
+                        </h2>
+                        <p className="text-sm text-gray-500 mt-1 mb-0">
                             {isEdit ? 'Modifiez les informations du produit' : 'Remplissez les informations du nouveau produit'}
-                        </PageSubtitle>
+                        </p>
                     </div>
 
-                    <form onSubmit={submit} encType="multipart/form-data">
+                    <form onSubmit={submit} encType="multipart/form-data" className="flex flex-col gap-4">
+
                         {/* Section 1 — Identification */}
-                        <Card>
-                            <div>
-                                <SectionTitle>1 — Identification</SectionTitle>
-                                <FormGrid2>
-                                    <Field label="Catégorie" error={errors.category}>
-                                        <Select value={data.category} onChange={(e) => handleCategory(e.target.value)}>
-                                            <option value="phone">Téléphone</option>
-                                            <option value="pc">PC / Laptop</option>
-                                        </Select>
-                                    </Field>
-                                    <Field label="État" error={errors.condition}>
-                                        <Select value={data.condition} onChange={(e) => setData('condition', e.target.value)}>
-                                            <option value="used">Occasion</option>
-                                            <option value="new">Neuf</option>
-                                        </Select>
-                                    </Field>
-                                </FormGrid2>
+                        <div className={cardCls}>
+                            <p className={sectionCls}>1 — Identification</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <Field label="Catégorie" error={errors.category}>
+                                    <select value={data.category} onChange={(e) => handleCategory(e.target.value)} className={inputCls}>
+                                        <option value="phone">Téléphone</option>
+                                        <option value="pc">PC / Laptop</option>
+                                    </select>
+                                </Field>
+                                <Field label="État" error={errors.condition}>
+                                    <select value={data.condition} onChange={(e) => setData('condition', e.target.value)} className={inputCls}>
+                                        <option value="used">Occasion</option>
+                                        <option value="new">Neuf</option>
+                                    </select>
+                                </Field>
                             </div>
-                        </Card>
+                        </div>
 
                         {/* Section 2 — Appareil */}
-                        <Card style={{ marginTop: 16 }}>
-                            <div>
-                                <SectionTitle>2 — Appareil</SectionTitle>
-                                <FormGrid2>
-                                    <Field label="Marque" error={errors.brand}>
-                                        <Select value={data.brand} onChange={(e) => handleBrand(e.target.value)}>
-                                            <option value="">-- Choisir une marque --</option>
-                                            {brandList.map(b => (
-                                                <option key={b} value={b}>{b}</option>
-                                            ))}
-                                        </Select>
-                                    </Field>
-                                    <Field label="Modèle" error={errors.name}>
-                                        {(!data.brand || customModel) ? (
-                                            <Input
-                                                value={data.name}
-                                                onChange={(e) => setData('name', e.target.value)}
-                                                placeholder={data.brand ? 'Saisir le modèle...' : 'Choisir d\'abord une marque'}
-                                                autoComplete="off"
-                                            />
-                                        ) : (
-                                            <Select
-                                                value={modelList.includes(data.name) ? data.name : (data.name ? 'Autre' : '')}
-                                                onChange={(e) => handleModel(e.target.value)}
-                                            >
-                                                <option value="">-- Choisir un modèle --</option>
-                                                {modelList.map(m => (
-                                                    <option key={m} value={m}>{m}</option>
-                                                ))}
-                                            </Select>
-                                        )}
-                                    </Field>
-                                </FormGrid2>
+                        <div className={cardCls}>
+                            <p className={sectionCls}>2 — Appareil</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <Field label="Marque" error={errors.brand}>
+                                    <select value={data.brand} onChange={(e) => handleBrand(e.target.value)} className={inputCls}>
+                                        <option value="">-- Choisir une marque --</option>
+                                        {brandList.map(b => <option key={b} value={b}>{b}</option>)}
+                                    </select>
+                                </Field>
+                                <Field label="Modèle" error={errors.name}>
+                                    {(!data.brand || customModel) ? (
+                                        <input
+                                            value={data.name}
+                                            onChange={(e) => setData('name', e.target.value)}
+                                            placeholder={data.brand ? 'Saisir le modèle...' : "Choisir d'abord une marque"}
+                                            autoComplete="off"
+                                            className={inputCls}
+                                        />
+                                    ) : (
+                                        <select
+                                            value={modelList.includes(data.name) ? data.name : (data.name ? 'Autre' : '')}
+                                            onChange={(e) => handleModel(e.target.value)}
+                                            className={inputCls}
+                                        >
+                                            <option value="">-- Choisir un modèle --</option>
+                                            {modelList.map(m => <option key={m} value={m}>{m}</option>)}
+                                        </select>
+                                    )}
+                                </Field>
                             </div>
-                        </Card>
+                        </div>
 
                         {/* Section 3 — Caractéristiques */}
-                        <Card style={{ marginTop: 16 }}>
-                            <div>
-                                <SectionTitle>3 — Caractéristiques</SectionTitle>
-                                <FormGrid2>
-                                    <Field label={data.category === 'phone' ? 'IMEI / N° Série' : 'N° Série'} error={errors.serial_number}>
-                                        <Input
-                                            value={data.serial_number}
-                                            onChange={(e) => setData('serial_number', e.target.value)}
-                                            placeholder="Ex: 359876543210987"
-                                        />
-                                    </Field>
-                                    <Field label="Couleur" error={errors.color}>
-                                        <Select value={data.color} onChange={(e) => setData('color', e.target.value)}>
-                                            <option value="">-- Couleur --</option>
-                                            {COLORS.map(c => (
-                                                <option key={c} value={c}>{c}</option>
-                                            ))}
-                                        </Select>
-                                    </Field>
-                                </FormGrid2>
-                                <div style={{ marginTop: 16 }}>
-                                    <FormGrid2>
-                                        <Field label="Stockage" error={errors.storage}>
-                                            <Select value={data.storage} onChange={(e) => setData('storage', e.target.value)}>
-                                                <option value="">-- Stockage --</option>
-                                                {storageList.map(s => (
-                                                    <option key={s} value={s}>{s}</option>
-                                                ))}
-                                            </Select>
-                                        </Field>
-                                        {data.category === 'phone' && (
-                                            <Field label="Batterie (%)" error={errors.battery_percentage}>
-                                                <Input
-                                                    type="number"
-                                                    min="0"
-                                                    max="100"
-                                                    value={data.battery_percentage}
-                                                    onChange={(e) => setData('battery_percentage', e.target.value)}
-                                                    placeholder="Ex: 85"
-                                                />
-                                            </Field>
-                                        )}
-                                    </FormGrid2>
-                                </div>
+                        <div className={cardCls}>
+                            <p className={sectionCls}>3 — Caractéristiques</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <Field label={data.category === 'phone' ? 'IMEI / N° Série' : 'N° Série'} error={errors.serial_number}>
+                                    <input value={data.serial_number} onChange={(e) => setData('serial_number', e.target.value)} placeholder="Ex: 359876543210987" className={inputCls} />
+                                </Field>
+                                <Field label="Couleur" error={errors.color}>
+                                    <select value={data.color} onChange={(e) => setData('color', e.target.value)} className={inputCls}>
+                                        <option value="">-- Couleur --</option>
+                                        {COLORS.map(c => <option key={c} value={c}>{c}</option>)}
+                                    </select>
+                                </Field>
                             </div>
-                        </Card>
-
-                        {/* Section 4 — Photo */}
-                        <Card style={{ marginTop: 16 }}>
-                            <div>
-                                <SectionTitle>4 — Photo</SectionTitle>
-                                <PhotoZone htmlFor="photo-upload">
-                                    {preview
-                                        ? <PhotoPreview src={preview} alt="preview" />
-                                        : <PhotoPlaceholder>📷</PhotoPlaceholder>
-                                    }
-                                    <PhotoMeta>
-                                        <PhotoTitle>{preview ? 'Changer la photo' : 'Ajouter une photo'}</PhotoTitle>
-                                        <PhotoHint>JPG, PNG — max 2 Mo. Cliquez pour sélectionner.</PhotoHint>
-                                    </PhotoMeta>
-                                    <input
-                                        id="photo-upload"
-                                        type="file"
-                                        accept="image/*"
-                                        style={{ display: 'none' }}
-                                        onChange={handlePhoto}
-                                    />
-                                </PhotoZone>
-                                {errors.photo && <ErrorMsg>{errors.photo}</ErrorMsg>}
-                            </div>
-                        </Card>
-
-                        {/* Section 5 — Prix */}
-                        <Card style={{ marginTop: 16 }}>
-                            <div>
-                                <SectionTitle>5 — Prix</SectionTitle>
-                                <FormGrid2>
-                                    <Field label="Prix d'achat (€)" error={errors.purchase_price}>
-                                        <Input
-                                            type="number"
-                                            step="0.01"
-                                            value={data.purchase_price}
-                                            onChange={(e) => setData('purchase_price', e.target.value)}
-                                            placeholder="0.00"
-                                        />
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                                <Field label="Stockage" error={errors.storage}>
+                                    <select value={data.storage} onChange={(e) => setData('storage', e.target.value)} className={inputCls}>
+                                        <option value="">-- Stockage --</option>
+                                        {storageList.map(s => <option key={s} value={s}>{s}</option>)}
+                                    </select>
+                                </Field>
+                                {data.category === 'phone' && (
+                                    <Field label="Batterie (%)" error={errors.battery_percentage}>
+                                        <input type="number" min="0" max="100" value={data.battery_percentage} onChange={(e) => setData('battery_percentage', e.target.value)} placeholder="Ex: 85" className={inputCls} />
                                     </Field>
-                                    <Field label="Prix de vente (€)" error={errors.selling_price}>
-                                        <Input
-                                            type="number"
-                                            step="0.01"
-                                            value={data.selling_price}
-                                            onChange={(e) => setData('selling_price', e.target.value)}
-                                            placeholder="0.00"
-                                        />
-                                    </Field>
-                                </FormGrid2>
-                                {showProfit && (
-                                    <ProfitBadge $pos={profit >= 0}>
-                                        {profit >= 0 ? '▲' : '▼'} Profit : {profit >= 0 ? '+' : ''}{profit.toFixed(2)} €
-                                    </ProfitBadge>
                                 )}
                             </div>
-                        </Card>
+                        </div>
+
+                        {/* Section 4 — Photo */}
+                        <div className={cardCls}>
+                            <p className={sectionCls}>4 — Photo</p>
+                            {preview ? (
+                                <label className="block cursor-pointer">
+                                    <img src={preview} alt="preview" className="object-cover rounded-xl h-40 w-full" />
+                                    <p className="text-xs text-gray-400 text-center mt-2">Cliquer pour changer la photo</p>
+                                    <input type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
+                                </label>
+                            ) : (
+                                <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-200 rounded-xl cursor-pointer hover:border-brand-400 hover:bg-brand-50/30 transition-colors">
+                                    <Camera size={24} className="text-gray-400 mb-2" />
+                                    <span className="text-sm text-gray-500">Cliquer pour télécharger</span>
+                                    <input type="file" accept="image/*" onChange={handlePhoto} className="hidden" />
+                                </label>
+                            )}
+                            {errors.photo && <p className="text-xs text-error-500 mt-1">{errors.photo}</p>}
+                        </div>
+
+                        {/* Section 5 — Prix */}
+                        <div className={cardCls}>
+                            <p className={sectionCls}>5 — Prix</p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <Field label="Prix d'achat (€)" error={errors.purchase_price}>
+                                    <input type="number" step="0.01" value={data.purchase_price} onChange={(e) => setData('purchase_price', e.target.value)} placeholder="0.00" className={inputCls} />
+                                </Field>
+                                <Field label="Prix de vente (€)" error={errors.selling_price}>
+                                    <input type="number" step="0.01" value={data.selling_price} onChange={(e) => setData('selling_price', e.target.value)} placeholder="0.00" className={inputCls} />
+                                </Field>
+                            </div>
+                            {showProfit && (
+                                <div className={`inline-flex items-center gap-1 mt-3 px-3 py-1.5 rounded-full text-sm font-semibold ${profit >= 0 ? 'bg-success-50 text-success-700' : 'bg-error-50 text-error-600'}`}>
+                                    {profit >= 0 ? '▲' : '▼'} Profit : {profit >= 0 ? '+' : ''}{profit.toFixed(2)} €
+                                </div>
+                            )}
+                        </div>
 
                         {/* Actions */}
-                        <BtnGroup style={{ marginTop: 8 }}>
-                            <PrimaryBtn type="submit" disabled={processing}>
+                        <div className="flex gap-2.5 pt-1">
+                            <button
+                                type="submit"
+                                disabled={processing}
+                                className="inline-flex items-center gap-2 bg-brand-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-brand-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
                                 {processing ? 'Enregistrement...' : (isEdit ? 'Sauvegarder' : 'Ajouter le produit')}
-                            </PrimaryBtn>
-                            <CancelBtn href="/products">Annuler</CancelBtn>
-                        </BtnGroup>
+                            </button>
+                            <Link
+                                href="/products"
+                                className="px-4 py-2 border border-gray-200 rounded-lg text-sm font-semibold text-gray-700 bg-white hover:bg-gray-50 transition-colors no-underline"
+                            >
+                                Annuler
+                            </Link>
+                        </div>
                     </form>
-                </PageWrapper>
+                </div>
             </AppLayout>
         </>
     )

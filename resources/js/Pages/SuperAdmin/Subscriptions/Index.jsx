@@ -1,397 +1,188 @@
-import styled from 'styled-components'
-import { Head, useForm } from '@inertiajs/react'
 import { useState } from 'react'
+import { Head, useForm } from '@inertiajs/react'
+import { Plus } from 'lucide-react'
 import AdminLayout from '../../../Layouts/AdminLayout'
 import Badge from '../../../Components/Badge'
 import Modal from '../../../Components/Modal'
 import Pagination from '../../../Components/Pagination'
 
 const fmt = (n) => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n)
-const statusMap = { active: 'success', expired: 'danger', suspended: 'warning' }
+
+const statusMap   = { active: 'success', expired: 'danger', suspended: 'warning' }
 const statusLabel = { active: 'Actif', expired: 'Expiré', suspended: 'Suspendu' }
 
-/* ── Styled Components ── */
-const PageWrapper = styled.div`
-    max-width: 1024px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-`
-
-const PageHeader = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-`
-
-const HeaderLeft = styled.div``
-
-const PageTitle = styled.h2`
-    font-size: 20px;
-    font-weight: 700;
-    color: #111827;
-    margin: 0;
-`
-
-const PageSubtitle = styled.p`
-    font-size: 14px;
-    color: #6B7280;
-    margin: 4px 0 0;
-`
-
-const AmberBtn = styled.button`
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: #F59E0B;
-    color: #FFFFFF;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 18px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 1px 2px rgba(245,158,11,0.3);
-    transition: background 0.15s;
-    &:hover { background: #D97706; }
-`
-
-const TableContainer = styled.div`
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-`
-
-const Table = styled.table`
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
-`
-
-const THeadRow = styled.tr`
-    background: #F9FAFB;
-    border-bottom: 2px solid #E5E7EB;
-`
-
-const TH = styled.th`
-    padding: 12px 20px;
-    text-align: left;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #9CA3AF;
-    white-space: nowrap;
-`
-
-const TR = styled.tr`
-    border-bottom: 1px solid #F3F4F6;
-    transition: background 0.15s;
-    &:last-child { border-bottom: none; }
-    &:hover { background: #FAFAFA; }
-`
-
-const TD = styled.td`
-    padding: 14px 20px;
-    vertical-align: middle;
-`
-
-const VendorAvatar = styled.div`
-    width: 30px;
-    height: 30px;
-    background: #FEF3C7;
-    border: 1px solid #FDE68A;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 600;
-    color: #D97706;
-    flex-shrink: 0;
-`
-
-const VendorRow = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 10px;
-`
-
-const VendorName = styled.span`
-    font-weight: 500;
-    color: #111827;
-`
-
-const PlanText = styled.span`
-    color: #374151;
-`
-
-const DateText = styled.span`
-    color: #9CA3AF;
-`
-
-const AmountText = styled.span`
-    font-weight: 600;
-    color: #111827;
-    font-variant-numeric: tabular-nums;
-`
-
-const EmptyCell = styled.td`
-    padding: 48px 20px;
-    text-align: center;
-    color: #9CA3AF;
-    font-size: 14px;
-`
-
-const PaginationWrap = styled.div`
-    padding: 12px 20px;
-    border-top: 1px solid #E5E7EB;
-`
-
-/* ── Modal Form ── */
-const FormStack = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-`
-
-const Grid2 = styled.div`
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-`
-
-const FieldWrap = styled.div``
-
-const Label = styled.label`
-    display: block;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #9CA3AF;
-    margin-bottom: 6px;
-`
-
-const Input = styled.input`
-    width: 100%;
-    box-sizing: border-box;
-    background: #FFFFFF;
-    border: 1.5px solid #E5E7EB;
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 14px;
-    color: #111827;
-    outline: none;
-    transition: border-color 0.15s, box-shadow 0.15s;
-    &::placeholder { color: #9CA3AF; }
-    &:focus {
-        border-color: #F59E0B;
-        box-shadow: 0 0 0 3px rgba(245,158,11,0.1);
-    }
-`
-
-const Select = styled.select`
-    width: 100%;
-    box-sizing: border-box;
-    background: #FFFFFF;
-    border: 1.5px solid #E5E7EB;
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 14px;
-    color: #111827;
-    outline: none;
-    cursor: pointer;
-    transition: border-color 0.15s, box-shadow 0.15s;
-    &:focus {
-        border-color: #F59E0B;
-        box-shadow: 0 0 0 3px rgba(245,158,11,0.1);
-    }
-`
-
-const ErrorMsg = styled.p`
-    font-size: 12px;
-    color: #EF4444;
-    margin: 4px 0 0;
-`
-
-const BtnRow = styled.div`
-    display: flex;
-    gap: 10px;
-    padding-top: 4px;
-`
-
-const SubmitBtn = styled.button`
-    padding: 10px 20px;
-    background: #F59E0B;
-    color: #FFFFFF;
-    font-size: 14px;
-    font-weight: 600;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.15s;
-    &:hover:not(:disabled) { background: #D97706; }
-    &:disabled { opacity: 0.5; cursor: not-allowed; }
-`
-
-const CancelBtn = styled.button`
-    padding: 10px 20px;
-    background: #F3F4F6;
-    color: #6B7280;
-    font-size: 14px;
-    font-weight: 500;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s;
-    &:hover { background: #E5E7EB; color: #111827; }
-`
+const labelCls  = 'block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1.5'
+const inputCls  = 'w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-300 transition-colors'
+const thCls     = 'px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-400'
+const tdCls     = 'px-4 py-3.5 text-sm text-gray-700 align-middle'
 
 const Field = ({ label, error, children }) => (
-    <FieldWrap>
-        <Label>{label}</Label>
+    <div>
+        <label className={labelCls}>{label}</label>
         {children}
-        {error && <ErrorMsg>{error}</ErrorMsg>}
-    </FieldWrap>
+        {error && <p className="text-xs text-error-500 mt-1.5">{error}</p>}
+    </div>
 )
 
 export default function SubscriptionsIndex({ subscriptions, vendors }) {
     const [showModal, setShowModal] = useState(false)
+
     const { data, setData, post, processing, errors, reset } = useForm({
-        vendor_id: '', plan_name: '', start_date: '', end_date: '', amount: '', status: 'active',
+        vendor_id: '',
+        plan_name: '',
+        start_date: '',
+        end_date: '',
+        amount: '',
+        status: 'active',
     })
 
     const submit = (e) => {
         e.preventDefault()
-        post('/superadmin/subscriptions', { onSuccess: () => { reset(); setShowModal(false) } })
+        post('/superadmin/subscriptions', {
+            onSuccess: () => { reset(); setShowModal(false) },
+        })
     }
 
     return (
         <>
             <Head title="Abonnements" />
             <AdminLayout title="Abonnements">
-                <PageWrapper>
-                    <PageHeader>
-                        <HeaderLeft>
-                            <PageTitle>Abonnements</PageTitle>
-                            <PageSubtitle>{subscriptions.total} abonnements enregistrés</PageSubtitle>
-                        </HeaderLeft>
-                        <AmberBtn onClick={() => setShowModal(true)}>
-                            <span>+</span> Nouvel abonnement
-                        </AmberBtn>
-                    </PageHeader>
+                <div className="max-w-5xl flex flex-col gap-6">
+                    {/* Header */}
+                    <div className="flex items-center justify-between flex-wrap gap-3">
+                        <div>
+                            <h2 className="text-xl font-bold text-gray-900">Abonnements</h2>
+                            <p className="text-sm text-gray-500 mt-1">{subscriptions.total} abonnements enregistrés</p>
+                        </div>
+                        <button
+                            onClick={() => setShowModal(true)}
+                            className="inline-flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-orange-600 transition-colors cursor-pointer"
+                        >
+                            <Plus size={15} />
+                            Nouvel abonnement
+                        </button>
+                    </div>
 
-                    <TableContainer>
-                        <Table>
+                    {/* Table */}
+                    <div className="bg-white border border-gray-200 rounded-2xl shadow-theme-xs overflow-hidden">
+                        <table className="w-full border-collapse text-sm">
                             <thead>
-                                <THeadRow>
-                                    <TH>Vendeur</TH>
-                                    <TH>Plan</TH>
-                                    <TH>Début</TH>
-                                    <TH>Fin</TH>
-                                    <TH>Montant</TH>
-                                    <TH>Statut</TH>
-                                </THeadRow>
+                                <tr className="bg-gray-50 border-b border-gray-200">
+                                    <th className={thCls}>Vendeur</th>
+                                    <th className={thCls}>Plan</th>
+                                    <th className={thCls}>Début</th>
+                                    <th className={thCls}>Fin</th>
+                                    <th className={thCls}>Montant</th>
+                                    <th className={thCls}>Statut</th>
+                                </tr>
                             </thead>
                             <tbody>
                                 {subscriptions.data.map((s) => (
-                                    <TR key={s.id}>
-                                        <TD>
-                                            <VendorRow>
-                                                <VendorAvatar>
+                                    <tr key={s.id} className="hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0">
+                                        <td className={tdCls}>
+                                            <div className="flex items-center gap-2.5">
+                                                <div className="w-8 h-8 rounded-full bg-orange-50 border border-orange-200 flex items-center justify-center text-xs font-semibold text-orange-700 flex-shrink-0">
                                                     {s.vendor?.name?.[0]?.toUpperCase()}
-                                                </VendorAvatar>
-                                                <VendorName>{s.vendor?.name}</VendorName>
-                                            </VendorRow>
-                                        </TD>
-                                        <TD><PlanText>{s.plan_name}</PlanText></TD>
-                                        <TD><DateText>{s.start_date}</DateText></TD>
-                                        <TD><DateText>{s.end_date}</DateText></TD>
-                                        <TD><AmountText>{fmt(s.amount)}</AmountText></TD>
-                                        <TD>
+                                                </div>
+                                                <span className="font-medium text-gray-900">{s.vendor?.name}</span>
+                                            </div>
+                                        </td>
+                                        <td className={tdCls}>{s.plan_name}</td>
+                                        <td className={tdCls}><span className="text-gray-500">{s.start_date}</span></td>
+                                        <td className={tdCls}><span className="text-gray-500">{s.end_date}</span></td>
+                                        <td className={tdCls}>
+                                            <span className="font-semibold tabular-nums">{fmt(s.amount)}</span>
+                                        </td>
+                                        <td className={tdCls}>
                                             <Badge variant={statusMap[s.status] ?? 'default'}>
                                                 {statusLabel[s.status] ?? s.status}
                                             </Badge>
-                                        </TD>
-                                    </TR>
+                                        </td>
+                                    </tr>
                                 ))}
                                 {subscriptions.data.length === 0 && (
-                                    <tr><EmptyCell colSpan={6}>Aucun abonnement</EmptyCell></tr>
+                                    <tr>
+                                        <td colSpan={6} className="px-4 py-12 text-center text-sm text-gray-400">
+                                            Aucun abonnement
+                                        </td>
+                                    </tr>
                                 )}
                             </tbody>
-                        </Table>
-                        <PaginationWrap>
+                        </table>
+                        <div className="px-4 py-3 border-t border-gray-100">
                             <Pagination links={subscriptions.links} />
-                        </PaginationWrap>
-                    </TableContainer>
-                </PageWrapper>
+                        </div>
+                    </div>
+                </div>
 
-                <Modal show={showModal} onClose={() => setShowModal(false)} title="Nouvel abonnement">
+                {/* Modal */}
+                <Modal open={showModal} onClose={() => setShowModal(false)} title="Nouvel abonnement">
                     <form onSubmit={submit}>
-                        <FormStack>
+                        <div className="flex flex-col gap-4">
                             <Field label="Vendeur" error={errors.vendor_id}>
-                                <Select value={data.vendor_id} onChange={(e) => setData('vendor_id', e.target.value)}>
+                                <select value={data.vendor_id} onChange={(e) => setData('vendor_id', e.target.value)} className={inputCls}>
                                     <option value="">Sélectionner un vendeur...</option>
                                     {vendors.map((v) => (
                                         <option key={v.id} value={v.id}>{v.name}</option>
                                     ))}
-                                </Select>
+                                </select>
                             </Field>
+
                             <Field label="Nom du plan" error={errors.plan_name}>
-                                <Input
+                                <input
                                     value={data.plan_name}
                                     onChange={(e) => setData('plan_name', e.target.value)}
                                     placeholder="Pro, Premium..."
+                                    className={inputCls}
                                 />
                             </Field>
-                            <Grid2>
+
+                            <div className="grid grid-cols-2 gap-3">
                                 <Field label="Début" error={errors.start_date}>
-                                    <Input
-                                        type="date"
-                                        value={data.start_date}
-                                        onChange={(e) => setData('start_date', e.target.value)}
-                                    />
+                                    <input type="date" value={data.start_date} onChange={(e) => setData('start_date', e.target.value)} className={inputCls} />
                                 </Field>
                                 <Field label="Fin" error={errors.end_date}>
-                                    <Input
-                                        type="date"
-                                        value={data.end_date}
-                                        onChange={(e) => setData('end_date', e.target.value)}
-                                    />
+                                    <input type="date" value={data.end_date} onChange={(e) => setData('end_date', e.target.value)} className={inputCls} />
                                 </Field>
-                            </Grid2>
-                            <Grid2>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
                                 <Field label="Montant (€)" error={errors.amount}>
-                                    <Input
+                                    <input
                                         type="number"
                                         step="0.01"
                                         value={data.amount}
                                         onChange={(e) => setData('amount', e.target.value)}
                                         placeholder="0.00"
+                                        className={inputCls}
                                     />
                                 </Field>
                                 <Field label="Statut" error={errors.status}>
-                                    <Select value={data.status} onChange={(e) => setData('status', e.target.value)}>
+                                    <select value={data.status} onChange={(e) => setData('status', e.target.value)} className={inputCls}>
                                         <option value="active">Actif</option>
                                         <option value="expired">Expiré</option>
                                         <option value="suspended">Suspendu</option>
-                                    </Select>
+                                    </select>
                                 </Field>
-                            </Grid2>
-                            <BtnRow>
-                                <SubmitBtn type="submit" disabled={processing}>
+                            </div>
+
+                            <div className="flex gap-2.5 pt-1">
+                                <button
+                                    type="submit"
+                                    disabled={processing}
+                                    className="px-5 py-2.5 bg-orange-500 text-white text-sm font-semibold rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 cursor-pointer"
+                                >
                                     {processing ? 'Enregistrement...' : 'Enregistrer'}
-                                </SubmitBtn>
-                                <CancelBtn type="button" onClick={() => setShowModal(false)}>
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setShowModal(false)}
+                                    className="px-5 py-2.5 bg-gray-100 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors cursor-pointer"
+                                >
                                     Annuler
-                                </CancelBtn>
-                            </BtnRow>
-                        </FormStack>
+                                </button>
+                            </div>
+                        </div>
                     </form>
                 </Modal>
             </AdminLayout>

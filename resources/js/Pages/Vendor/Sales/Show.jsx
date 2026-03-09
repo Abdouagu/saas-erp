@@ -1,332 +1,21 @@
-import styled from 'styled-components'
 import { Head, Link, useForm } from '@inertiajs/react'
 import { useState } from 'react'
+import { ArrowLeft, FileText, Plus } from 'lucide-react'
 import AppLayout from '../../../Layouts/AppLayout'
 import Badge from '../../../Components/Badge'
 import Modal from '../../../Components/Modal'
 
 const fmt = (n) => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n)
-const statusMap = { paid: 'success', partial: 'warning', pending: 'danger' }
+const statusMap   = { paid: 'success', partial: 'warning', pending: 'danger' }
 const statusLabel = { paid: 'Payée', partial: 'Partielle', pending: 'En attente' }
 
-/* ── Styled Components ── */
-const PageWrapper = styled.div`
-    max-width: 1024px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-`
-
-const HeaderRow = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-`
-
-const BackLink = styled(Link)`
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 13px;
-    color: #9CA3AF;
-    text-decoration: none;
-    margin-right: 4px;
-    transition: color 0.15s;
-    &:hover { color: #6366F1; }
-`
-
-const PayBtn = styled.button`
-    padding: 7px 14px;
-    background: #059669;
-    color: #FFFFFF;
-    font-size: 13px;
-    font-weight: 600;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.15s;
-    &:hover { background: #047857; }
-`
-
-const PdfLink = styled.a`
-    margin-left: auto;
-    padding: 7px 14px;
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    color: #374151;
-    font-size: 13px;
-    font-weight: 500;
-    border-radius: 8px;
-    text-decoration: none;
-    transition: background 0.15s;
-    &:hover { background: #F9FAFB; }
-`
-
-const Grid3 = styled.div`
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-    @media (min-width: 1024px) {
-        grid-template-columns: 2fr 1fr;
-    }
-`
-
-const Card = styled.div`
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-`
-
-const CardHeader = styled.div`
-    padding: 16px 20px;
-    border-bottom: 1px solid #E5E7EB;
-`
-
-const CardTitle = styled.h3`
-    font-size: 14px;
-    font-weight: 600;
-    color: #111827;
-    margin: 0;
-`
-
-const ItemRow = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 20px;
-    border-bottom: 1px solid #F3F4F6;
-    &:last-child { border-bottom: none; }
-`
-
-const ItemName = styled.p`
-    font-size: 14px;
-    font-weight: 500;
-    color: #111827;
-    margin: 0;
-`
-
-const ItemSub = styled.p`
-    font-size: 12px;
-    color: #9CA3AF;
-    margin: 2px 0 0;
-`
-
-const ItemPrice = styled.span`
-    font-size: 14px;
-    font-weight: 600;
-    color: #111827;
-    font-variant-numeric: tabular-nums;
-`
-
-const RightCol = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-`
-
-const SummaryCard = styled.div`
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 12px;
-    padding: 16px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-`
-
-const SummaryCardTitle = styled.h3`
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #9CA3AF;
-    margin: 0 0 12px;
-`
-
-const SummaryRows = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-`
-
-const SRow = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
-`
-
-const SLabel = styled.span`
-    color: #6B7280;
-`
-
-const SValue = styled.span`
-    color: #374151;
-    font-variant-numeric: tabular-nums;
-`
-
-const STotalRow = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 15px;
-    font-weight: 700;
-    color: #111827;
-    border-top: 1px solid #E5E7EB;
-    padding-top: 10px;
-    margin-top: 4px;
-    font-variant-numeric: tabular-nums;
-`
-
-const SPaidRow = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
-    color: #059669;
-    font-variant-numeric: tabular-nums;
-`
-
-const SRemainingRow = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
-    font-weight: 600;
-    color: #D97706;
-    font-variant-numeric: tabular-nums;
-`
-
-const DiscountRow = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
-    color: #D97706;
-    font-variant-numeric: tabular-nums;
-`
-
-const PaymentsCard = styled.div`
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-`
-
-const PaymentRow = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 16px;
-    border-bottom: 1px solid #F3F4F6;
-    &:last-child { border-bottom: none; }
-`
-
-const PaymentDate = styled.span`
-    font-size: 12px;
-    color: #9CA3AF;
-`
-
-const PaymentAmount = styled.span`
-    font-size: 14px;
-    font-weight: 600;
-    color: #059669;
-    font-variant-numeric: tabular-nums;
-`
-
-/* ── Modal Form ── */
-const FormStack = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-`
-
-const FieldWrap = styled.div``
-
-const Label = styled.label`
-    display: block;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #9CA3AF;
-    margin-bottom: 6px;
-`
-
-const Input = styled.input`
-    width: 100%;
-    box-sizing: border-box;
-    background: #FFFFFF;
-    border: 1.5px solid #E5E7EB;
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 14px;
-    color: #111827;
-    outline: none;
-    transition: border-color 0.15s, box-shadow 0.15s;
-    &::placeholder { color: #9CA3AF; }
-    &:focus {
-        border-color: #6366F1;
-        box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
-    }
-`
-
-const ErrorMsg = styled.p`
-    font-size: 12px;
-    color: #EF4444;
-    margin: 4px 0 0;
-`
-
-const BtnRow = styled.div`
-    display: flex;
-    gap: 10px;
-    padding-top: 4px;
-`
-
-const SubmitBtn = styled.button`
-    padding: 10px 20px;
-    background: #059669;
-    color: #FFFFFF;
-    font-size: 14px;
-    font-weight: 600;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.15s;
-    &:hover:not(:disabled) { background: #047857; }
-    &:disabled { opacity: 0.5; cursor: not-allowed; }
-`
-
-const CancelBtn = styled.button`
-    padding: 10px 20px;
-    background: #F3F4F6;
-    color: #6B7280;
-    font-size: 14px;
-    font-weight: 500;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s;
-    &:hover { background: #E5E7EB; color: #111827; }
-`
-
-const Field = ({ label, error, children }) => (
-    <FieldWrap>
-        <Label>{label}</Label>
-        {children}
-        {error && <ErrorMsg>{error}</ErrorMsg>}
-    </FieldWrap>
-)
+const inputCls = 'w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-300'
+const labelCls = 'block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1.5'
 
 export default function SaleShow({ sale }) {
     const [showPayment, setShowPayment] = useState(false)
     const { data, setData, post, processing, errors, reset } = useForm({
-        sale_id: sale.id,
-        amount: '',
-        payment_date: new Date().toISOString().split('T')[0],
-        notes: '',
+        sale_id: sale.id, amount: '', payment_date: new Date().toISOString().split('T')[0], notes: '',
     })
 
     const remaining = sale.final_amount - sale.paid_amount
@@ -340,130 +29,134 @@ export default function SaleShow({ sale }) {
         <>
             <Head title={`Vente #${sale.id}`} />
             <AppLayout title={`Vente #${sale.id}`}>
-                <PageWrapper>
-                    <HeaderRow>
-                        <BackLink href="/sales">← Retour</BackLink>
+                <div className="max-w-5xl flex flex-col gap-4">
+                    {/* Header */}
+                    <div className="flex flex-wrap items-center gap-2">
+                        <Link href="/sales" className="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-brand-500 transition-colors mr-1">
+                            <ArrowLeft size={14} /> Retour
+                        </Link>
                         <Badge variant={statusMap[sale.status]}>{statusLabel[sale.status]}</Badge>
                         {sale.status !== 'paid' && (
-                            <PayBtn onClick={() => setShowPayment(true)}>
-                                + Enregistrer paiement
-                            </PayBtn>
+                            <button
+                                onClick={() => setShowPayment(true)}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-success-500 text-white text-sm font-semibold rounded-lg hover:bg-success-600 transition-colors cursor-pointer"
+                            >
+                                <Plus size={14} /> Enregistrer paiement
+                            </button>
                         )}
-                        <PdfLink href={`/sales/${sale.id}/invoice/pdf`} target="_blank">
-                            Facture PDF
-                        </PdfLink>
-                    </HeaderRow>
+                        <a
+                            href={`/sales/${sale.id}/invoice/pdf`}
+                            target="_blank"
+                            className="inline-flex items-center gap-1.5 ml-auto px-3 py-1.5 bg-white border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                        >
+                            <FileText size={14} /> Facture PDF
+                        </a>
+                    </div>
 
-                    <Grid3>
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Articles ({sale.items?.length ?? 0})</CardTitle>
-                            </CardHeader>
+                    {/* Main grid */}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                        {/* Articles */}
+                        <div className="lg:col-span-2 bg-white border border-gray-200 rounded-2xl shadow-theme-xs overflow-hidden">
+                            <div className="px-5 py-4 border-b border-gray-100">
+                                <h3 className="text-sm font-semibold text-gray-900">Articles ({sale.items?.length ?? 0})</h3>
+                            </div>
                             <div>
                                 {sale.items?.map((item) => (
-                                    <ItemRow key={item.id}>
+                                    <div key={item.id} className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 last:border-0">
                                         <div>
-                                            <ItemName>{item.product?.name}</ItemName>
-                                            <ItemSub>{item.product?.internal_code} · {item.product?.category}</ItemSub>
+                                            <p className="text-sm font-medium text-gray-900">{item.product?.name}</p>
+                                            <p className="text-xs text-gray-400 mt-0.5">{item.product?.internal_code} · {item.product?.category}</p>
                                         </div>
-                                        <ItemPrice>{fmt(item.price)}</ItemPrice>
-                                    </ItemRow>
+                                        <span className="text-sm font-semibold text-gray-900 tabular-nums">{fmt(item.price)}</span>
+                                    </div>
                                 ))}
                             </div>
-                        </Card>
+                        </div>
 
-                        <RightCol>
-                            <SummaryCard>
-                                <SummaryCardTitle>Résumé</SummaryCardTitle>
-                                <SummaryRows>
-                                    <SRow>
-                                        <SLabel>Client</SLabel>
-                                        <SValue style={{ fontWeight: 500, color: '#111827' }}>
-                                            {sale.client?.name ?? 'Anonyme'}
-                                        </SValue>
-                                    </SRow>
-                                    <SRow>
-                                        <SLabel>Sous-total</SLabel>
-                                        <SValue>{fmt(sale.total_amount)}</SValue>
-                                    </SRow>
+                        {/* Right col */}
+                        <div className="flex flex-col gap-3">
+                            {/* Summary */}
+                            <div className="bg-white border border-gray-200 rounded-2xl shadow-theme-xs p-4">
+                                <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-3">Résumé</h3>
+                                <div className="flex flex-col gap-2">
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-gray-500">Client</span>
+                                        <span className="font-medium text-gray-900">{sale.client?.name ?? 'Anonyme'}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="text-gray-500">Sous-total</span>
+                                        <span className="text-gray-700 tabular-nums">{fmt(sale.total_amount)}</span>
+                                    </div>
                                     {sale.discount_percentage > 0 && (
-                                        <DiscountRow>
+                                        <div className="flex justify-between items-center text-sm text-warning-600 tabular-nums">
                                             <span>Remise ({sale.discount_percentage}%)</span>
                                             <span>-{fmt(sale.total_amount * sale.discount_percentage / 100)}</span>
-                                        </DiscountRow>
+                                        </div>
                                     )}
-                                    <STotalRow>
+                                    <div className="flex justify-between items-center text-[15px] font-bold text-gray-900 border-t border-gray-100 pt-2.5 mt-1 tabular-nums">
                                         <span>Total</span>
                                         <span>{fmt(sale.final_amount)}</span>
-                                    </STotalRow>
-                                    <SPaidRow>
+                                    </div>
+                                    <div className="flex justify-between items-center text-sm text-success-600 tabular-nums">
                                         <span>Payé</span>
                                         <span>{fmt(sale.paid_amount)}</span>
-                                    </SPaidRow>
+                                    </div>
                                     {remaining > 0 && (
-                                        <SRemainingRow>
+                                        <div className="flex justify-between items-center text-sm font-semibold text-warning-600 tabular-nums">
                                             <span>Restant</span>
                                             <span>{fmt(remaining)}</span>
-                                        </SRemainingRow>
+                                        </div>
                                     )}
-                                </SummaryRows>
-                            </SummaryCard>
+                                </div>
+                            </div>
 
+                            {/* Payments history */}
                             {sale.payments?.length > 0 && (
-                                <PaymentsCard>
-                                    <CardHeader>
-                                        <SummaryCardTitle style={{ margin: 0 }}>Paiements</SummaryCardTitle>
-                                    </CardHeader>
+                                <div className="bg-white border border-gray-200 rounded-2xl shadow-theme-xs overflow-hidden">
+                                    <div className="px-4 py-3 border-b border-gray-100">
+                                        <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-400">Paiements</h3>
+                                    </div>
                                     <div>
                                         {sale.payments.map((p) => (
-                                            <PaymentRow key={p.id}>
-                                                <PaymentDate>{p.payment_date}</PaymentDate>
-                                                <PaymentAmount>{fmt(p.amount)}</PaymentAmount>
-                                            </PaymentRow>
+                                            <div key={p.id} className="flex justify-between items-center px-4 py-2.5 border-b border-gray-100 last:border-0">
+                                                <span className="text-xs text-gray-400">{p.payment_date}</span>
+                                                <span className="text-sm font-semibold text-success-600 tabular-nums">{fmt(p.amount)}</span>
+                                            </div>
                                         ))}
                                     </div>
-                                </PaymentsCard>
+                                </div>
                             )}
-                        </RightCol>
-                    </Grid3>
-                </PageWrapper>
+                        </div>
+                    </div>
+                </div>
 
-                <Modal show={showPayment} onClose={() => setShowPayment(false)} title="Enregistrer un paiement">
+                {/* Payment Modal */}
+                <Modal open={showPayment} onClose={() => setShowPayment(false)} title="Enregistrer un paiement">
                     <form onSubmit={submitPayment}>
-                        <FormStack>
-                            <Field label={`Montant (max: ${fmt(remaining)})`} error={errors.amount}>
-                                <Input
-                                    type="number"
-                                    step="0.01"
-                                    max={remaining}
-                                    value={data.amount}
-                                    onChange={(e) => setData('amount', e.target.value)}
-                                    placeholder="0.00"
-                                />
-                            </Field>
-                            <Field label="Date de paiement" error={errors.payment_date}>
-                                <Input
-                                    type="date"
-                                    value={data.payment_date}
-                                    onChange={(e) => setData('payment_date', e.target.value)}
-                                />
-                            </Field>
-                            <Field label="Notes" error={errors.notes}>
-                                <Input
-                                    value={data.notes}
-                                    onChange={(e) => setData('notes', e.target.value)}
-                                    placeholder="Optionnel..."
-                                />
-                            </Field>
-                            <BtnRow>
-                                <SubmitBtn type="submit" disabled={processing}>
+                        <div className="flex flex-col gap-3.5">
+                            <div>
+                                <label className={labelCls}>Montant (max: {fmt(remaining)})</label>
+                                <input type="number" step="0.01" max={remaining} value={data.amount} onChange={(e) => setData('amount', e.target.value)} placeholder="0.00" className={inputCls} />
+                                {errors.amount && <p className="text-xs text-error-500 mt-1">{errors.amount}</p>}
+                            </div>
+                            <div>
+                                <label className={labelCls}>Date de paiement</label>
+                                <input type="date" value={data.payment_date} onChange={(e) => setData('payment_date', e.target.value)} className={inputCls} />
+                                {errors.payment_date && <p className="text-xs text-error-500 mt-1">{errors.payment_date}</p>}
+                            </div>
+                            <div>
+                                <label className={labelCls}>Notes</label>
+                                <input value={data.notes} onChange={(e) => setData('notes', e.target.value)} placeholder="Optionnel..." className={inputCls} />
+                            </div>
+                            <div className="flex gap-2.5 pt-1">
+                                <button type="submit" disabled={processing} className="px-5 py-2.5 bg-success-500 text-white text-sm font-semibold rounded-lg hover:bg-success-600 transition-colors disabled:opacity-50 cursor-pointer">
                                     {processing ? 'Enregistrement...' : 'Enregistrer'}
-                                </SubmitBtn>
-                                <CancelBtn type="button" onClick={() => setShowPayment(false)}>
+                                </button>
+                                <button type="button" onClick={() => setShowPayment(false)} className="px-5 py-2.5 bg-gray-100 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors cursor-pointer">
                                     Annuler
-                                </CancelBtn>
-                            </BtnRow>
-                        </FormStack>
+                                </button>
+                            </div>
+                        </div>
                     </form>
                 </Modal>
             </AppLayout>

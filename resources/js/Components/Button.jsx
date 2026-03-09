@@ -1,96 +1,36 @@
-import React from 'react';
-import styled, { css } from 'styled-components';
+import { motion } from 'framer-motion';
 
-const variantStyles = {
-  primary: css`
-    background: #6366F1;
-    color: #ffffff;
-    border: 1px solid transparent;
-    box-shadow: 0 1px 4px rgba(99, 102, 241, 0.3);
-
-    &:hover:not(:disabled) {
-      background: #4F46E5;
-      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
-    }
-  `,
-  secondary: css`
-    background: #ffffff;
-    color: #374151;
-    border: 1px solid #E5E7EB;
-
-    &:hover:not(:disabled) {
-      background: #F9FAFB;
-      border-color: #D1D5DB;
-    }
-  `,
-  danger: css`
-    background: #EF4444;
-    color: #ffffff;
-    border: 1px solid transparent;
-
-    &:hover:not(:disabled) {
-      background: #DC2626;
-    }
-  `,
-  ghost: css`
-    background: transparent;
-    color: #6B7280;
-    border: 1px solid transparent;
-
-    &:hover:not(:disabled) {
-      background: #F9FAFB;
-      color: #374151;
-    }
-  `,
+const VARIANTS = {
+  primary:   'bg-brand-500 text-white hover:bg-brand-600 shadow-theme-xs',
+  admin:     'bg-orange-500 text-white hover:bg-orange-600 shadow-theme-xs',
+  secondary: 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 shadow-theme-xs',
+  danger:    'bg-white border border-error-200 text-error-600 hover:bg-error-50',
+  ghost:     'bg-transparent text-gray-500 hover:bg-gray-100 hover:text-gray-700',
+  success:   'bg-success-500 text-white hover:bg-success-600 shadow-theme-xs',
 };
 
-const sizeStyles = {
-  sm: css`
-    padding: 8px 14px;
-    font-size: 12px;
-  `,
-  md: css`
-    padding: 10px 18px;
-    font-size: 14px;
-  `,
-  lg: css`
-    padding: 12px 22px;
-    font-size: 15px;
-  `,
+const SIZES = {
+  sm: 'px-3 py-1.5 text-xs gap-1.5',
+  md: 'px-4 py-2 text-sm gap-2',
+  lg: 'px-5 py-2.5 text-sm gap-2',
 };
-
-const StyledButton = styled.button`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  text-decoration: none;
-  line-height: 1.4;
-  white-space: nowrap;
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  ${({ $variant }) => variantStyles[$variant] ?? variantStyles.secondary}
-  ${({ $size }) => sizeStyles[$size] ?? sizeStyles.md}
-`;
 
 export default function Button({
   variant = 'secondary',
   size = 'md',
   children,
-  as: Tag = 'button',
+  disabled,
+  className = '',
   ...props
 }) {
   return (
-    <StyledButton as={Tag} $variant={variant} $size={size} {...props}>
+    <motion.button
+      whileTap={{ scale: 0.97 }}
+      disabled={disabled}
+      className={`inline-flex items-center justify-center rounded-lg font-semibold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${VARIANTS[variant] ?? VARIANTS.secondary} ${SIZES[size] ?? SIZES.md} ${className}`}
+      {...props}
+    >
       {children}
-    </StyledButton>
+    </motion.button>
   );
 }
