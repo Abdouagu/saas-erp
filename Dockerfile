@@ -1,8 +1,9 @@
-FROM php:8.3-cli
+FROM php:8.3-fpm
 
 # System dependencies
 RUN apt-get update && apt-get install -y \
     git zip unzip curl libzip-dev libpng-dev libonig-dev libxml2-dev libpq-dev \
+    nginx supervisor gettext-base \
     && docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring zip bcmath gd \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -28,6 +29,17 @@ RUN npm ci && npm run build && rm -rf node_modules
 RUN chmod -R 775 storage bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache
 
+# Nginx config
+COPY docker/nginx.conf /etc/nginx/sites-available/default.template
+RUN rm -f /etc/nginx/sites-enabled/default
+
+# Supervisor config
+COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Start script
+COPY docker/start.sh /start.sh
+RUN chmod +x /start.sh
+
 EXPOSE 10000
 
-CMD sh -c "php artisan config:cache && php artisan route:cache && php artisan migrate:fresh --force && php artisan db:seed --force && php -S 0.0.0.0:${PORT:-10000} -t public"
+CMD ["/start.sh"]
