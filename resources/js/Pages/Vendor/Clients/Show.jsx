@@ -1,9 +1,9 @@
+import { fmt } from '../../../utils/fmt'
 import { Head, Link } from '@inertiajs/react'
 import { ArrowLeft } from 'lucide-react'
 import AppLayout from '../../../Layouts/AppLayout'
 import Badge from '../../../Components/Badge'
 
-const fmt = (n) => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n)
 const saleBadge = { paid: 'success', partial: 'warning', pending: 'danger' }
 const saleLabel = { paid: 'Payée', partial: 'Partielle', pending: 'En attente' }
 

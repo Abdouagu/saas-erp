@@ -1,3 +1,4 @@
+import { fmt } from '../../../utils/fmt'
 import { Head, Link, router } from '@inertiajs/react'
 import { useState } from 'react'
 import { motion } from 'framer-motion'
@@ -6,7 +7,6 @@ import AppLayout from '../../../Layouts/AppLayout'
 import Badge from '../../../Components/Badge'
 import Pagination from '../../../Components/Pagination'
 
-const fmt = (n) => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n)
 const conditionMap   = { new: 'success', used: 'warning' }
 const statusMap      = { available: 'info', sold: 'danger' }
 const conditionLabel = { new: 'Neuf', used: 'Occasion' }

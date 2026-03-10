@@ -1,3 +1,4 @@
+import { fmt } from '../../utils/fmt'
 import { Head, Link } from '@inertiajs/react'
 import { motion } from 'framer-motion'
 import { TrendingUp, ArrowUpRight, Users, Package } from 'lucide-react'
@@ -8,7 +9,6 @@ import {
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts'
 
-const fmt = (n) => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n ?? 0)
 const saleBadge = { paid: 'success', partial: 'warning', pending: 'danger' }
 const saleLabel = { paid: 'Payée', partial: 'Partielle', pending: 'En attente' }
 

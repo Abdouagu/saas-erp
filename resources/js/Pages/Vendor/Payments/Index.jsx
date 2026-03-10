@@ -1,8 +1,8 @@
+import { fmt } from '../../../utils/fmt'
 import { Head, Link } from '@inertiajs/react'
 import AppLayout from '../../../Layouts/AppLayout'
 import Pagination from '../../../Components/Pagination'
 
-const fmt = (n) => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n)
 
 const thCls = 'px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-400'
 const tdCls = 'px-4 py-3.5 text-sm text-gray-700 align-middle'

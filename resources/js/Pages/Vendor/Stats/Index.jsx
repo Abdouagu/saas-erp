@@ -1,3 +1,4 @@
+import { fmt } from '../../../utils/fmt'
 import { Head } from '@inertiajs/react'
 import AppLayout from '../../../Layouts/AppLayout'
 import StatCard from '../../../Components/StatCard'
@@ -7,7 +8,6 @@ import {
     PieChart, Pie, Cell, Legend,
 } from 'recharts'
 
-const fmt = (n) => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n ?? 0)
 const PIE_COLORS = ['#465fff', '#12b76a']
 
 export default function StatsIndex({

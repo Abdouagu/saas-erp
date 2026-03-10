@@ -1,11 +1,9 @@
+import { fmt } from '../../utils/fmt'
 import { Head, Link } from '@inertiajs/react'
 import { Store, Users, Ban, Euro } from 'lucide-react'
 import AdminLayout from '../../Layouts/AdminLayout'
 import StatCard from '../../Components/StatCard'
 import Badge from '../../Components/Badge'
-
-const fmt = (n) =>
-    new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n ?? 0)
 
 const thCls = 'px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-400'
 const tdCls = 'px-4 py-3.5 text-sm text-gray-700 align-middle'

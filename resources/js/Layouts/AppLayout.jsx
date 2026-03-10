@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import {
   LayoutDashboard, Package, ScanLine, ShoppingCart,
   Users, CreditCard, BarChart2, LogOut, CheckCircle,
-  XCircle, ChevronLeft, ChevronRight, Menu,
+  XCircle, ChevronLeft, ChevronRight, Menu, Settings,
 } from 'lucide-react';
 
 /* ── Navigation items ─────────────────────────────────── */
@@ -16,6 +16,7 @@ const NAV = [
   { href: '/clients',    label: 'Clients',          icon: Users,           match: '/clients' },
   { href: '/payments',   label: 'Paiements',        icon: CreditCard,      match: '/payments' },
   { href: '/stats',      label: 'Statistiques',     icon: BarChart2,       match: '/stats' },
+  { href: '/settings',   label: 'Paramètres',       icon: Settings,        match: '/settings' },
 ];
 
 /* ── Single nav link ──────────────────────────────────── */

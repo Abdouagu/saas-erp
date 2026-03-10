@@ -1,3 +1,4 @@
+import { fmt } from '../../../utils/fmt'
 import { Head, Link, useForm } from '@inertiajs/react'
 import { useState } from 'react'
 import { ArrowLeft, FileText, Plus } from 'lucide-react'
@@ -5,7 +6,6 @@ import AppLayout from '../../../Layouts/AppLayout'
 import Badge from '../../../Components/Badge'
 import Modal from '../../../Components/Modal'
 
-const fmt = (n) => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n)
 const statusMap   = { paid: 'success', partial: 'warning', pending: 'danger' }
 const statusLabel = { paid: 'Payée', partial: 'Partielle', pending: 'En attente' }
 

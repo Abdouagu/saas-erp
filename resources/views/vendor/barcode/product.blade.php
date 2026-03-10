@@ -52,7 +52,7 @@
             </div>
             <div class="flex justify-between py-2 border-b">
                 <span class="text-gray-500">Prix de vente</span>
-                <span class="font-bold text-indigo-600 text-lg">{{ number_format($product->selling_price, 0, ',', ' ') }} DZD</span>
+                <span class="font-bold text-indigo-600 text-lg">{{ number_format($product->selling_price, 0, ',', ' ') }} DH</span>
             </div>
             <div class="flex justify-between py-2">
                 <span class="text-gray-500">Code interne</span>

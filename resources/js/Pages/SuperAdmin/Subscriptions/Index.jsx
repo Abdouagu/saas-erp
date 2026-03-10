@@ -1,3 +1,5 @@
+import { fmt } from '../../../utils/fmt'
+
 import { useState } from 'react'
 import { Head, useForm } from '@inertiajs/react'
 import { Plus } from 'lucide-react'
@@ -6,7 +8,6 @@ import Badge from '../../../Components/Badge'
 import Modal from '../../../Components/Modal'
 import Pagination from '../../../Components/Pagination'
 
-const fmt = (n) => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n)
 
 const statusMap   = { active: 'success', expired: 'danger', suspended: 'warning' }
 const statusLabel = { active: 'Actif', expired: 'Expiré', suspended: 'Suspendu' }

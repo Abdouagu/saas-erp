@@ -68,7 +68,7 @@
                     @if($item->product->color) <br><small style="color:#888;">{{ $item->product->color }} · {{ $item->product->storage }}</small> @endif
                 </td>
                 <td><small>{{ $item->product->internal_code }}</small></td>
-                <td style="text-align:right;">{{ number_format($item->price, 0, ',', ' ') }} DZD</td>
+                <td style="text-align:right;">{{ number_format($item->price, 0, ',', ' ') }} DH</td>
             </tr>
             @endforeach
         </tbody>
@@ -77,26 +77,26 @@
     <table class="totals">
         <tr>
             <td>Sous-total</td>
-            <td style="text-align:right;">{{ number_format($sale->total_amount, 0, ',', ' ') }} DZD</td>
+            <td style="text-align:right;">{{ number_format($sale->total_amount, 0, ',', ' ') }} DH</td>
         </tr>
         @if($sale->discount_percentage > 0)
         <tr>
             <td>Remise ({{ $sale->discount_percentage }}%)</td>
-            <td style="text-align:right; color:#ef4444;">- {{ number_format($sale->total_amount * $sale->discount_percentage / 100, 0, ',', ' ') }} DZD</td>
+            <td style="text-align:right; color:#ef4444;">- {{ number_format($sale->total_amount * $sale->discount_percentage / 100, 0, ',', ' ') }} DH</td>
         </tr>
         @endif
         <tr class="grand-total">
             <td>Total</td>
-            <td style="text-align:right;">{{ number_format($sale->final_amount, 0, ',', ' ') }} DZD</td>
+            <td style="text-align:right;">{{ number_format($sale->final_amount, 0, ',', ' ') }} DH</td>
         </tr>
         <tr>
             <td>Payé</td>
-            <td style="text-align:right; color:#059669;">{{ number_format($sale->paid_amount, 0, ',', ' ') }} DZD</td>
+            <td style="text-align:right; color:#059669;">{{ number_format($sale->paid_amount, 0, ',', ' ') }} DH</td>
         </tr>
         @if($sale->remainingAmount() > 0)
         <tr>
             <td>Reste</td>
-            <td style="text-align:right; color:#ef4444;">{{ number_format($sale->remainingAmount(), 0, ',', ' ') }} DZD</td>
+            <td style="text-align:right; color:#ef4444;">{{ number_format($sale->remainingAmount(), 0, ',', ' ') }} DH</td>
         </tr>
         @endif
     </table>

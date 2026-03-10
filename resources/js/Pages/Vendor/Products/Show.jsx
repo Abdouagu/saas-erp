@@ -1,9 +1,9 @@
+import { fmt } from '../../../utils/fmt'
 import { Head, Link, router } from '@inertiajs/react'
 import { ArrowLeft, Pencil, Trash2, FileText, Package } from 'lucide-react'
 import AppLayout from '../../../Layouts/AppLayout'
 import Badge from '../../../Components/Badge'
 
-const fmt = (n) => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n)
 const conditionMap   = { new: 'success', used: 'warning' }
 const statusMap      = { available: 'info', sold: 'danger' }
 const conditionLabel = { new: 'Neuf', used: 'Occasion' }

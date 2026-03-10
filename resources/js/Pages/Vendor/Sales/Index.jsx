@@ -1,10 +1,10 @@
+import { fmt } from '../../../utils/fmt'
 import { Head, Link } from '@inertiajs/react'
 import { Plus, Eye, FileText } from 'lucide-react'
 import AppLayout from '../../../Layouts/AppLayout'
 import Badge from '../../../Components/Badge'
 import Pagination from '../../../Components/Pagination'
 
-const fmt = (n) => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n)
 const statusMap = { paid: 'success', partial: 'warning', pending: 'danger' }
 const statusLabel = { paid: 'Payée', partial: 'Partielle', pending: 'En attente' }
 

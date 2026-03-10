@@ -11,6 +11,7 @@ use App\Http\Controllers\Vendor\SaleController;
 use App\Http\Controllers\Vendor\ClientController;
 use App\Http\Controllers\Vendor\PaymentController;
 use App\Http\Controllers\Vendor\StatsController;
+use App\Http\Controllers\Vendor\SettingsController;
 use Illuminate\Support\Facades\Route;
 
 // Auth
@@ -77,6 +78,11 @@ Route::middleware(['auth', 'isVendor', 'checkSubscription'])->group(function () 
 
     // Stats
     Route::get('/stats', [StatsController::class, 'index'])->name('vendor.stats.index');
+
+    // Settings
+    Route::get('/settings', [SettingsController::class, 'index'])->name('vendor.settings');
+    Route::post('/settings', [SettingsController::class, 'update'])->name('vendor.settings.update');
+    Route::delete('/settings/logo', [SettingsController::class, 'deleteLogo'])->name('vendor.settings.logo.delete');
 });
 
 Route::get('/', function () {

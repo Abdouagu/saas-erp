@@ -1,10 +1,10 @@
+import { fmt } from '../../../utils/fmt'
 import { Head, useForm, Link } from '@inertiajs/react'
 import { useState } from 'react'
 import { Combobox, ComboboxInput, ComboboxOptions, ComboboxOption } from '@headlessui/react'
 import { ArrowLeft, X } from 'lucide-react'
 import AppLayout from '../../../Layouts/AppLayout'
 
-const fmt = (n) => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(n)
 
 const inputCls  = 'w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-300 bg-white text-gray-900 placeholder:text-gray-400'
 const labelCls  = 'block text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1.5'
