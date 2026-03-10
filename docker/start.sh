@@ -9,9 +9,7 @@ envsubst '${PORT}' < /etc/nginx/sites-available/default.template > /etc/nginx/co
 # Laravel setup
 php /app/artisan config:cache
 php /app/artisan route:cache
-php /app/artisan db:wipe --force || true
 php /app/artisan migrate --force
-php /app/artisan db:seed --force
 
 # Start services
 exec /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
