@@ -4,115 +4,147 @@
     <meta charset="UTF-8">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
+            width: 170pt;
             background: #fff;
-            width: 252pt;
+            color: #111;
         }
+
         .ticket {
-            width: 252pt;
-            padding: 10pt 10pt 8pt 10pt;
+            width: 170pt;
+            padding: 5pt 5pt 4pt 5pt;
             background: #fff;
         }
 
-        /* ── Top row: product name (left) + logo (right) ── */
-        .top-row {
+        /* ── Top section: 2-column table ── */
+        .top-table {
             width: 100%;
-            overflow: hidden;
-            margin-bottom: 7pt;
+            border-collapse: collapse;
+            margin-bottom: 4pt;
         }
+        .col-info {
+            width: 103pt;
+            vertical-align: top;
+            padding-right: 4pt;
+        }
+        .col-side {
+            width: 52pt;
+            vertical-align: top;
+            text-align: center;
+        }
+
+        /* Product name */
         .product-name {
-            float: left;
-            font-size: 11pt;
+            font-size: 7.5pt;
             font-weight: bold;
-            color: #111827;
-            max-width: 155pt;
-            line-height: 1.2;
+            color: #000;
+            line-height: 1.3;
+            margin-bottom: 3pt;
         }
-        .logo-area {
-            float: right;
-            text-align: right;
+
+        /* Spec rows */
+        .spec {
+            font-size: 5.5pt;
+            color: #222;
+            line-height: 1.7;
         }
-        .logo-area img {
-            max-width: 65pt;
-            max-height: 38pt;
+
+        /* Logo */
+        .logo-wrap {
+            margin-bottom: 3pt;
+        }
+        .logo-wrap img {
+            max-width: 50pt;
+            max-height: 16pt;
             object-fit: contain;
         }
-        .logo-initial {
-            display: inline-block;
-            font-size: 18pt;
+        .logo-text {
+            font-size: 8pt;
             font-weight: bold;
-            color: #111827;
             font-style: italic;
             font-family: Georgia, serif;
+            color: #111;
         }
 
-        /* ── Product specs ── */
-        .details {
-            margin-bottom: 8pt;
-            clear: both;
-        }
-        .detail-row {
-            font-size: 8.5pt;
-            color: #1f2937;
-            line-height: 1.65;
-        }
-
-        /* ── Barcode ── */
-        .barcode-section {
-            text-align: center;
-            border-top: 0.5pt solid #d1d5db;
-            padding-top: 6pt;
-        }
-        .barcode-section img {
-            width: 232pt;
-            height: 52pt;
+        /* QR code */
+        .qr-wrap img {
+            width: 46pt;
+            height: 46pt;
             image-rendering: pixelated;
         }
-        .barcode-code {
+
+        /* Divider */
+        .divider {
+            border: none;
+            border-top: 0.5pt solid #bbb;
+            margin: 3pt 0;
+        }
+
+        /* Barcode */
+        .barcode-wrap {
+            text-align: center;
+        }
+        .barcode-wrap img {
+            width: 158pt;
+            height: 22pt;
+            image-rendering: pixelated;
+        }
+        .barcode-num {
             font-family: 'Courier New', monospace;
-            font-size: 7pt;
-            color: #374151;
-            letter-spacing: 1.5pt;
-            margin-top: 2pt;
+            font-size: 5pt;
+            color: #333;
+            letter-spacing: 1pt;
+            margin-top: 1.5pt;
         }
     </style>
 </head>
 <body>
 <div class="ticket">
 
-    {{-- Top row --}}
-    <div class="top-row">
-        <div class="product-name">{{ $product->name }}</div>
-        <div class="logo-area">
-            @if($logoBase64)
-                <img src="{{ $logoBase64 }}" alt="Logo">
-            @else
-                <span class="logo-initial">{{ $vendor->shop_name ?: $vendor->name }}</span>
-            @endif
-        </div>
-    </div>
+    {{-- ── Top: info (left) + logo/QR (right) ── --}}
+    <table class="top-table">
+        <tr>
+            <td class="col-info">
+                <div class="product-name">{{ $product->name }}</div>
+                @if($product->storage)
+                    <div class="spec">Capacity : {{ $product->storage }}</div>
+                @endif
+                @if($product->battery_percentage !== null)
+                    <div class="spec">Battery : {{ $product->battery_percentage }}%</div>
+                @endif
+                @if($product->color)
+                    <div class="spec">Color : {{ $product->color }}</div>
+                @endif
+                @if($product->serial_number)
+                    <div class="spec">IMEI : {{ $product->serial_number }}</div>
+                @endif
+            </td>
+            <td class="col-side">
+                {{-- Logo --}}
+                <div class="logo-wrap">
+                    @if($logoBase64)
+                        <img src="{{ $logoBase64 }}" alt="Logo">
+                    @else
+                        <span class="logo-text">{{ $vendor->shop_name ?: $vendor->name }}</span>
+                    @endif
+                </div>
+                {{-- QR Code --}}
+                <div class="qr-wrap">
+                    <img src="{{ $qrBase64 }}" alt="QR">
+                </div>
+            </td>
+        </tr>
+    </table>
 
-    {{-- Product specs --}}
-    <div class="details">
-        @if($product->storage)
-            <div class="detail-row">Capacity : {{ $product->storage }}</div>
-        @endif
-        @if($product->battery_percentage !== null)
-            <div class="detail-row">Battery : {{ $product->battery_percentage }}%</div>
-        @endif
-        @if($product->color)
-            <div class="detail-row">Color : {{ $product->color }}</div>
-        @endif
-        @if($product->serial_number)
-            <div class="detail-row">IMEI : {{ $product->serial_number }}</div>
-        @endif
-    </div>
+    {{-- ── Divider ── --}}
+    <hr class="divider">
 
-    {{-- Barcode --}}
-    <div class="barcode-section">
+    {{-- ── Barcode + IMEI number ── --}}
+    <div class="barcode-wrap">
         <img src="{{ $barcodeBase64 }}" alt="Barcode">
-        <div class="barcode-code">{{ $code }}</div>
+        <div class="barcode-num">{{ $code }}</div>
     </div>
 
 </div>
