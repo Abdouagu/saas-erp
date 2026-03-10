@@ -127,7 +127,7 @@ export default function SaleCreate({ clients, products }) {
                                                             onChange={(e) => updatePrice(item.id, e.target.value)}
                                                             className="w-24 bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1.5 text-sm text-gray-900 text-right focus:outline-none focus:border-brand-300"
                                                         />
-                                                        <span className="text-xs text-gray-400">€</span>
+                                                        <span className="text-xs text-gray-400">DH</span>
                                                         <button
                                                             type="button"
                                                             onClick={() => removeItem(item.id)}
@@ -190,7 +190,7 @@ export default function SaleCreate({ clients, products }) {
                                             </select>
                                         </div>
                                         <div>
-                                            <label className={labelCls}>Montant payé (€)</label>
+                                            <label className={labelCls}>Montant payé (DH)</label>
                                             <input
                                                 type="number" step="0.01"
                                                 value={data.paid_amount}

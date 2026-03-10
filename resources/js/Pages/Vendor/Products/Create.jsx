@@ -230,16 +230,16 @@ export default function ProductCreate({ product }) {
                         <div className={cardCls}>
                             <p className={sectionCls}>5 — Prix</p>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <Field label="Prix d'achat (€)" error={errors.purchase_price}>
+                                <Field label="Prix d'achat (DH)" error={errors.purchase_price}>
                                     <input type="number" step="0.01" value={data.purchase_price} onChange={(e) => setData('purchase_price', e.target.value)} placeholder="0.00" className={inputCls} />
                                 </Field>
-                                <Field label="Prix de vente (€)" error={errors.selling_price}>
+                                <Field label="Prix de vente (DH)" error={errors.selling_price}>
                                     <input type="number" step="0.01" value={data.selling_price} onChange={(e) => setData('selling_price', e.target.value)} placeholder="0.00" className={inputCls} />
                                 </Field>
                             </div>
                             {showProfit && (
                                 <div className={`inline-flex items-center gap-1 mt-3 px-3 py-1.5 rounded-full text-sm font-semibold ${profit >= 0 ? 'bg-success-50 text-success-700' : 'bg-error-50 text-error-600'}`}>
-                                    {profit >= 0 ? '▲' : '▼'} Profit : {profit >= 0 ? '+' : ''}{profit.toFixed(2)} €
+                                    {profit >= 0 ? '▲' : '▼'} Profit : {profit >= 0 ? '+' : ''}{profit.toFixed(2)} DH
                                 </div>
                             )}
                         </div>

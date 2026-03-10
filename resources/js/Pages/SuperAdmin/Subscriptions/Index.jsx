@@ -148,7 +148,7 @@ export default function SubscriptionsIndex({ subscriptions, vendors }) {
                             </div>
 
                             <div className="grid grid-cols-2 gap-3">
-                                <Field label="Montant (€)" error={errors.amount}>
+                                <Field label="Montant (DH)" error={errors.amount}>
                                     <input
                                         type="number"
                                         step="0.01"

@@ -6,20 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Inertia\Inertia;
-use Picqer\Barcode\BarcodeGeneratorSVG;
+use Picqer\Barcode\BarcodeGeneratorPNG;
 
 class BarcodeController extends Controller
 {
     public function downloadPDF(Product $product)
     {
-        $generator = new BarcodeGeneratorSVG();
-        $barcodeSvg = $generator->getBarcode(
-            $product->barcode ?: $product->internal_code,
-            $generator::TYPE_CODE_128,
-            2,
-            80
-        );
+        $code = $product->barcode ?: $product->internal_code;
 
+        // Generate barcode as PNG then encode to base64
+        $generator = new BarcodeGeneratorPNG();
+        $barcodePng = $generator->getBarcode($code, $generator::TYPE_CODE_128, 3, 80);
+        $barcodeBase64 = 'data:image/png;base64,' . base64_encode($barcodePng);
+
+        // Vendor logo as base64
         $vendor = auth()->user();
         $logoBase64 = null;
         if ($vendor->logo && file_exists(storage_path("app/public/{$vendor->logo}"))) {
@@ -28,8 +28,8 @@ class BarcodeController extends Controller
             $logoBase64 = "data:{$logoMime};base64,{$logoData}";
         }
 
-        $pdf = Pdf::loadView('vendor.barcode.pdf', compact('product', 'barcodeSvg', 'vendor', 'logoBase64'));
-        $pdf->setPaper([0, 0, 226, 340], 'portrait'); // 8cm x 12cm
+        $pdf = Pdf::loadView('vendor.barcode.pdf', compact('product', 'barcodeBase64', 'code', 'vendor', 'logoBase64'));
+        $pdf->setPaper([0, 0, 204, 288], 'portrait'); // ~7cm x 10cm
         return $pdf->download("ticket-{$product->internal_code}.pdf");
     }
 

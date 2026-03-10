@@ -85,7 +85,7 @@ export default function VendorDashboard({
                                     </defs>
                                     <CartesianGrid strokeDasharray="3 3" stroke="#F2F4F7" />
                                     <XAxis dataKey="month" tick={{ fill: '#98A2B3', fontSize: 11 }} axisLine={false} tickLine={false} />
-                                    <YAxis tick={{ fill: '#98A2B3', fontSize: 11 }} tickFormatter={(v) => `${v}€`} axisLine={false} tickLine={false} width={48} />
+                                    <YAxis tick={{ fill: '#98A2B3', fontSize: 11 }} tickFormatter={(v) => `${v} DH`} axisLine={false} tickLine={false} width={48} />
                                     <Tooltip
                                         contentStyle={{ background: '#FFFFFF', border: '1px solid #E4E7EC', borderRadius: '10px', color: '#101828', fontSize: 12 }}
                                         formatter={(v) => [fmt(v), 'Revenu']}
