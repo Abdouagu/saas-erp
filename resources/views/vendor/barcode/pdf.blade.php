@@ -7,98 +7,112 @@
         body {
             font-family: Arial, sans-serif;
             background: #fff;
-            width: 204pt;
+            width: 252pt;
         }
         .ticket {
-            width: 204pt;
-            padding: 16pt;
-            text-align: center;
+            width: 252pt;
+            padding: 10pt 10pt 8pt 10pt;
+            background: #fff;
         }
 
-        /* Logo */
-        .logo-wrap {
-            margin-bottom: 14pt;
+        /* ── Top row: product name (left) + logo (right) ── */
+        .top-row {
+            width: 100%;
+            overflow: hidden;
+            margin-bottom: 7pt;
         }
-        .logo-wrap img {
-            max-width: 80pt;
-            max-height: 50pt;
+        .product-name {
+            float: left;
+            font-size: 11pt;
+            font-weight: bold;
+            color: #111827;
+            max-width: 155pt;
+            line-height: 1.2;
+        }
+        .logo-area {
+            float: right;
+            text-align: right;
+        }
+        .logo-area img {
+            max-width: 65pt;
+            max-height: 38pt;
             object-fit: contain;
         }
         .logo-initial {
             display: inline-block;
-            width: 50pt;
-            height: 50pt;
-            background: #f3f4f6;
-            border-radius: 8pt;
-            font-size: 22pt;
+            font-size: 18pt;
             font-weight: bold;
-            color: #465fff;
-            line-height: 50pt;
-            text-align: center;
+            color: #111827;
+            font-style: italic;
+            font-family: Georgia, serif;
         }
 
-        /* Barcode */
-        .barcode-wrap {
-            margin-bottom: 6pt;
+        /* ── Product specs ── */
+        .details {
+            margin-bottom: 8pt;
+            clear: both;
         }
-        .barcode-wrap img {
-            width: 172pt;
-            height: 70pt;
+        .detail-row {
+            font-size: 8.5pt;
+            color: #1f2937;
+            line-height: 1.65;
+        }
+
+        /* ── Barcode ── */
+        .barcode-section {
+            text-align: center;
+            border-top: 0.5pt solid #d1d5db;
+            padding-top: 6pt;
+        }
+        .barcode-section img {
+            width: 232pt;
+            height: 52pt;
             image-rendering: pixelated;
         }
         .barcode-code {
             font-family: 'Courier New', monospace;
             font-size: 7pt;
             color: #374151;
-            letter-spacing: 2pt;
-            margin-top: 3pt;
-        }
-
-        /* Divider */
-        .divider {
-            border: none;
-            border-top: 1pt solid #e5e7eb;
-            margin: 12pt 0;
-        }
-
-        /* Price */
-        .price {
-            font-size: 26pt;
-            font-weight: bold;
-            color: #111827;
-            letter-spacing: -0.5pt;
-        }
-        .price-currency {
-            font-size: 14pt;
-            color: #6b7280;
-            margin-left: 2pt;
+            letter-spacing: 1.5pt;
+            margin-top: 2pt;
         }
     </style>
 </head>
 <body>
 <div class="ticket">
 
-    {{-- Logo --}}
-    <div class="logo-wrap">
-        @if($logoBase64)
-            <img src="{{ $logoBase64 }}" alt="Logo">
-        @else
-            <span class="logo-initial">{{ strtoupper(substr($vendor->shop_name ?: $vendor->name, 0, 1)) }}</span>
+    {{-- Top row --}}
+    <div class="top-row">
+        <div class="product-name">{{ $product->name }}</div>
+        <div class="logo-area">
+            @if($logoBase64)
+                <img src="{{ $logoBase64 }}" alt="Logo">
+            @else
+                <span class="logo-initial">{{ $vendor->shop_name ?: $vendor->name }}</span>
+            @endif
+        </div>
+    </div>
+
+    {{-- Product specs --}}
+    <div class="details">
+        @if($product->storage)
+            <div class="detail-row">Capacity : {{ $product->storage }}</div>
+        @endif
+        @if($product->battery_percentage !== null)
+            <div class="detail-row">Battery : {{ $product->battery_percentage }}%</div>
+        @endif
+        @if($product->color)
+            <div class="detail-row">Color : {{ $product->color }}</div>
+        @endif
+        @if($product->serial_number)
+            <div class="detail-row">IMEI : {{ $product->serial_number }}</div>
         @endif
     </div>
 
-    {{-- Barcode (vraies lignes verticales) --}}
-    <div class="barcode-wrap">
+    {{-- Barcode --}}
+    <div class="barcode-section">
         <img src="{{ $barcodeBase64 }}" alt="Barcode">
         <div class="barcode-code">{{ $code }}</div>
-    </div>
-
-    <hr class="divider">
-
-    {{-- Prix --}}
-    <div>
-        <span class="price">{{ number_format($product->selling_price, 0, ',', ' ') }}</span>
-        <span class="price-currency">DH</span>
     </div>
 
 </div>

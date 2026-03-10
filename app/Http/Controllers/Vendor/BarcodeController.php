@@ -29,7 +29,7 @@ class BarcodeController extends Controller
         }
 
         $pdf = Pdf::loadView('vendor.barcode.pdf', compact('product', 'barcodeBase64', 'code', 'vendor', 'logoBase64'));
-        $pdf->setPaper([0, 0, 204, 288], 'portrait'); // ~7cm x 10cm
+        $pdf->setPaper([0, 0, 252, 165], 'portrait'); // ~8.9cm x 5.8cm label
         return $pdf->download("ticket-{$product->internal_code}.pdf");
     }
 

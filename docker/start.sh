@@ -9,6 +9,9 @@ envsubst '${PORT}' < /etc/nginx/sites-available/default.template > /etc/nginx/co
 php /app/artisan config:cache || true
 php /app/artisan route:cache  || true
 
+# Storage symlink (needed for uploaded files)
+php /app/artisan storage:link --force || true
+
 # Run migrations in background so nginx starts immediately
 (sleep 5 && php /app/artisan migrate --force) &
 
