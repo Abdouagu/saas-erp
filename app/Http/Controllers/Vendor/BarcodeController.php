@@ -23,12 +23,13 @@ class BarcodeController extends Controller
         $barcodePng = $generator->getBarcode($code, $generator::TYPE_CODE_128, 2, 60);
         $barcodeBase64 = 'data:image/png;base64,' . base64_encode($barcodePng);
 
-        // QR code (IMEI / serial) as base64 PNG
+        // QR code encodes the public product URL so scanning with a phone opens the browser directly
+        $productUrl = url('/barcode/' . urlencode($code));
         $qrOptions = new QROptions;
         $qrOptions->outputType       = QROutputInterface::GDIMAGE_PNG;
         $qrOptions->scale            = 4;
         $qrOptions->imageTransparent = false;
-        $qrBase64 = (new QRCode($qrOptions))->render($imei);
+        $qrBase64 = (new QRCode($qrOptions))->render($productUrl);
 
         // Vendor logo as base64
         $vendor    = auth()->user();
@@ -58,6 +59,7 @@ class BarcodeController extends Controller
         $product = Product::withoutGlobalScopes()
             ->where('barcode', $code)
             ->orWhere('internal_code', $code)
+            ->orWhere('serial_number', $code)
             ->firstOrFail();
 
         return view('vendor.barcode.product', compact('product'));
