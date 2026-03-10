@@ -7,7 +7,7 @@ use App\Models\Product;
 use Barryvdh\DomPDF\Facade\Pdf;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
-use chillerlan\QRCode\Output\QRGdImagePNG;
+use chillerlan\QRCode\Output\QROutputInterface;
 use Inertia\Inertia;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 
@@ -25,8 +25,8 @@ class BarcodeController extends Controller
 
         // QR code (IMEI / serial) as base64 PNG
         $qrOptions = new QROptions;
-        $qrOptions->outputType     = QRGdImagePNG::class;
-        $qrOptions->scale          = 4;
+        $qrOptions->outputType       = QROutputInterface::GDIMAGE_PNG;
+        $qrOptions->scale            = 4;
         $qrOptions->imageTransparent = false;
         $qrBase64 = (new QRCode($qrOptions))->render($imei);
 
